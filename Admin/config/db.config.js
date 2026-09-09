@@ -3,18 +3,29 @@ import mongoose from "mongoose";
 const DBConnect = async () => {
   try {
     const options = {
-      maxPoolSize: 50,
-      minPoolSize: 10,
-      serverSelectionTimeoutMS: 5000,
+      maxPoolSize: 10,
+      minPoolSize: 0,
+      serverSelectionTimeoutMS: 10000,
       socketTimeoutMS: 45000,
       family: 4,
     };
 
-    await mongoose.connect(process.env.MONGO_URL, options);
-    console.log("✅ Admin MongoDB Connected with optimized connection pool");
-  } catch (error) {
+    if (!process.env.MONGO_URL) {
+      throw new Error("MONGO_URL is not defined");
+    }
 
-    process.exit(1);
+    if (mongoose.connection.readyState === 1) {
+      console.log(" MongoDB already connected");
+      return;
+    }
+
+    await mongoose.connect(process.env.MONGO_URL, options);
+
+    console.log("Admin MongoDB Connected");
+  } catch (error) {
+    console.error(" MongoDB Connection Error:", error.message);
+
+    throw error;
   }
 };
 
