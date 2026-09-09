@@ -13,6 +13,7 @@ Alluser.get("/alluser", async (req, res) => {
       data: AllUser,
     });
   } catch (error) {
+    console.error("❌ Alluser Route Error:", error.message || error);
     return res.status(500).json({
       message: error.message,
     });

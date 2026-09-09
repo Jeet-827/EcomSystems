@@ -8,6 +8,7 @@ export const GetAllUser = async (req, res) => {
       AllUser,
     });
   } catch (error) {
+    console.error("❌ Admin GetAllUser Error:", error.message || error);
     return res.status(501).json({
       message: error.message,
     });

@@ -10,6 +10,7 @@ export const GetAllProduct = async (req, res) => {
       data: products,
     });
   } catch (error) {
+    console.error("❌ GetAllProduct Error:", error.message || error);
     res.status(500).json({
       message: "internal server error",
       error: error.message,
@@ -56,6 +57,7 @@ export const GetAllUpdate = async (req, res) => {
       data: updatedProduct,
     });
   } catch (error) {
+    console.error("❌ GetAllUpdate Error:", error.message || error);
     res.status(500).json({
       message: "internal server error",
       error: error.message,
@@ -82,6 +84,7 @@ export const DeleteProduct = async (req, res) => {
       data: product,
     });
   } catch (error) {
+    console.error("❌ DeleteProduct Error:", error.message || error);
     res.status(500).json({
       message: "internal server error",
       error: error.message,

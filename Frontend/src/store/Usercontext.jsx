@@ -63,7 +63,7 @@ export const Providerfun = ({ children }) => {
         setToken(res.data.token);
       }
     } catch (error) {
-      // Silent session verification - no noisy log
+      console.error("❌ Session verification error:", error);
     } finally {
       setLoading(false);
     }

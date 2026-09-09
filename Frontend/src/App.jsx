@@ -57,8 +57,8 @@ function App() {
           { withCredentials: true }
         );
         setToken(res.data.accessToken);
-      } catch {
-        // Token refresh failed silently — user will be prompted on next protected action
+      } catch (err) {
+        console.error("❌ Token refresh failed:", err);
       }
     }, 14 * 60 * 1000);
     return () => clearInterval(interval);
@@ -73,8 +73,8 @@ function App() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setCartitem(res.data.cart || []);
-    } catch {
-      // Cart fetch failed silently
+    } catch (err) {
+      console.error("❌ Cart fetch error:", err);
     }
   }, [token, user, setCartitem]);
 

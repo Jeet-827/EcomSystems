@@ -52,6 +52,7 @@ export const Signin = async (req, res) => {
       },
     });
   } catch (error) {
+    console.error("❌ Signin Error:", error.message || error);
     return res.status(500).json({
       message: error.message,
     });
@@ -91,6 +92,7 @@ export const Admincreate = async (req, res) => {
       token,
     });
   } catch (error) {
+    console.error("❌ Admincreate Error:", error.message || error);
     return res.status(500).json({
       message: error.message,
     });
@@ -139,6 +141,7 @@ export const adminupdate = async (req, res) => {
       message: "Password Updated",
     });
   } catch (error) {
+    console.error("❌ adminupdate Error:", error.message || error);
     return res.status(500).json({
       message: error.message,
     });
@@ -158,6 +161,7 @@ export const AdminLogout = async (req, res) => {
       success: true,
     });
   } catch (error) {
+    console.error("❌ AdminLogout Error:", error.message || error);
     return res.status(500).json({
       message: error.message,
     });
