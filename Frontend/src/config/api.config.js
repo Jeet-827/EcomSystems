@@ -1,18 +1,18 @@
-// Automatically detect local vs deployed environment (Vercel, Render, etc.)
+// Automatically detect local vs deployed environment
 const isLocalhost =
   typeof window !== "undefined" &&
   (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
 
 const getApiUrl = (envUrl, defaultLocalPort) => {
-  // Use explicitly set backend URL if provided (e.g. https://your-backend.onrender.com)
-  if (envUrl && envUrl.trim() !== "") {
+  // If an explicit external URL is set (e.g. separate backend deployment), use it
+  if (envUrl && envUrl.trim() !== "" && !envUrl.includes("localhost")) {
     return envUrl.trim();
   }
-  // On deployed domain (Vercel etc.) with no explicit URL, use relative path ""
+  // On deployed domain (Vercel, etc.) — use relative paths so /api/... hits the same domain
   if (!isLocalhost) {
     return "";
   }
-  // Local development fallback
+  // Local development
   return `http://localhost:${defaultLocalPort}`;
 };
 

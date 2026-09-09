@@ -1,16 +1,11 @@
 {
   "version": 2,
+  "buildCommand": "cd Frontend && npm install && npm run build",
+  "outputDirectory": "Frontend/dist",
   "builds": [
     {
       "src": "Backend/server.js",
       "use": "@vercel/node"
-    },
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "Frontend/dist"
-      }
     }
   ],
   "routes": [
@@ -19,7 +14,12 @@
       "dest": "/Backend/server.js"
     },
     {
-      "handle": "filesystem"
+      "src": "/assets/(.*)",
+      "dest": "/Frontend/dist/assets/$1"
+    },
+    {
+      "src": "/(.*\\.(js|css|svg|png|ico|webp|woff2?))",
+      "dest": "/Frontend/dist/$1"
     },
     {
       "src": "/(.*)",
