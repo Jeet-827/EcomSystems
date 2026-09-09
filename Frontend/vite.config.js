@@ -3,7 +3,6 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
-  envPrefix: ['VITE_', 'VITE-'],
   plugins: [react(), tailwindcss()],
   test: {
     environment: 'jsdom',
