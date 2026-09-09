@@ -34,7 +34,7 @@ export const Auth2Middleware = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    console.error("❌ Auth2Middleware Error:", error.message || error);
+
     return res.status(200).json({ user: null, token: null });
   }
 };

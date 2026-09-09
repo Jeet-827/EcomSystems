@@ -12,7 +12,7 @@ export const AuthMiddleware = (req, res, next) => {
     req.UserId = decoded.id;
     next();
   } catch (error) {
-    console.error("❌ AuthMiddleware Error:", error.message || error);
+
     return res.status(401).json({ message: "Invalid or expired token" });
   }
 };

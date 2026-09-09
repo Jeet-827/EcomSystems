@@ -13,7 +13,7 @@ const DBConnect = async () => {
     await mongoose.connect(process.env.MONGO_URL, options);
     console.log("✅ MongoDB Connected with optimized connection pool");
   } catch (error) {
-    console.error("❌ MongoDB Connection Error:", error);
+
     process.exit(1);
   }
 };

@@ -39,7 +39,7 @@ export const Protected = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("❌ Admin Protected Auth Error:", error.message || error);
+
     return res.status(401).json({
       message: "Invalid or expired admin session",
       success: false,

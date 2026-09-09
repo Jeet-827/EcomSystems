@@ -119,7 +119,7 @@ app.get("/", (req, res) => {
 
 // Global Error Handler Middleware (logs errors to console)
 app.use((err, req, res, next) => {
-  console.error("❌ Global Express Error:", err.stack || err.message || err);
+
   res.status(err.status || 500).json({
     message: err.message || "Internal Server Error",
     ...(process.env.NODE_ENV !== "production" && { error: err.message }),
@@ -127,11 +127,11 @@ app.use((err, req, res, next) => {
 });
 
 process.on("unhandledRejection", (reason, promise) => {
-  console.error("❌ Unhandled Rejection at:", promise, "reason:", reason);
+
 });
 
 process.on("uncaughtException", (err) => {
-  console.error("❌ Uncaught Exception:", err);
+
 });
 
 if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {

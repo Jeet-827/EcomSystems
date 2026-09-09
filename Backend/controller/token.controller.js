@@ -29,7 +29,7 @@ const Model = (req, res) => {
     });
     return res.status(200).json({ message: "token created", accessToken });
   } catch (error) {
-    console.error("❌ Token Refresh Controller Error:", error.message || error);
+
     return res.status(500).json({
       message: error.message,
     });

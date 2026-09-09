@@ -16,5 +16,5 @@ const getApiUrl = (envUrl, defaultLocalPort) => {
   return `http://localhost:${defaultLocalPort}`;
 };
 
-export const API_BASE_URL = getApiUrl(import.meta.env.VITE_API_URL, 5000);
-export const ADMIN_API_BASE_URL = getApiUrl(import.meta.env.VITE_ADMIN_API_URL || import.meta.env.VITE_API_URL, 5000);
+export const API_BASE_URL = getApiUrl(import.meta.env["VITE-API-URL"] || import.meta.env.VITE_API_URL, 5000);
+export const ADMIN_API_BASE_URL = getApiUrl(import.meta.env["VITE-ADMIN-API-URL"] || import.meta.env.VITE_ADMIN_API_URL || import.meta.env["VITE-API-URL"] || import.meta.env.VITE_API_URL, 5000);

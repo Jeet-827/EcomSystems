@@ -63,7 +63,7 @@ export const Providerfun = ({ children }) => {
         setToken(res.data.token);
       }
     } catch (error) {
-      console.error("❌ Session verification error:", error);
+
     } finally {
       setLoading(false);
     }

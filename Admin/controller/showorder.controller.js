@@ -11,7 +11,7 @@ export const showorder = async (req, res) => {
       data: Od,
     });
   } catch (error) {
-    console.error("❌ Admin showorder Error:", error.message || error);
+
     res.status(500).json({
       message: error.message,
     });
@@ -38,7 +38,7 @@ export const updateOrderStatus = async (req, res) => {
       order,
     });
   } catch (error) {
-    console.error("❌ Admin updateOrderStatus Error:", error.message || error);
+
     res.status(500).json({
       message: error.message,
     });
@@ -58,7 +58,7 @@ export const singleOrder = async (req, res) => {
       order,
     });
   } catch (error) {
-    console.error("❌ Admin singleOrder Error:", error.message || error);
+
     res.status(500).json({
       message: error.message,
     });

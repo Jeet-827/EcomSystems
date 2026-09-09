@@ -58,7 +58,7 @@ function App() {
         );
         setToken(res.data.accessToken);
       } catch (err) {
-        console.error("❌ Token refresh failed:", err);
+
       }
     }, 14 * 60 * 1000);
     return () => clearInterval(interval);
@@ -74,7 +74,7 @@ function App() {
       );
       setCartitem(res.data.cart || []);
     } catch (err) {
-      console.error("❌ Cart fetch error:", err);
+
     }
   }, [token, user, setCartitem]);
 
