@@ -56,7 +56,7 @@ app.use("/api/v1/user", Alluser);
 app.use("/api/v1/edit", EditRouter);
 
 app.get("/", (req, res) => {
-  res.send("server running");
+  res.send("server admins running");
 });
 
 // Global Error Handler Middleware (logs errors to console)
