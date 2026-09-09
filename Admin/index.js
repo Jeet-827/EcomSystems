@@ -9,10 +9,11 @@ import Showorder from "./routes/order.routes.js";
 import AdminRoutes from "./routes/admin.routes.js";
 import Alluser from "./routes/alluserget.routes.js";
 import EditRouter from "./routes/editproduct.routes.js";
+import dotenv from "dotenv"
 
 const app = express();
 DBConnect();
-
+dotenv.config()
 // Security & compression
 app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 app.use(
