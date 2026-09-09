@@ -1,21 +1,36 @@
 
+
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import compression from "compression";
 import helmet from "helmet";
+import dotenv from "dotenv";
 import DBConnect from "./config/db.config.js";
+
 import Showorder from "./routes/order.routes.js";
 import AdminRoutes from "./routes/admin.routes.js";
 import Alluser from "./routes/alluserget.routes.js";
 import EditRouter from "./routes/editproduct.routes.js";
-import dotenv from "dotenv"
 
 const app = express();
+
+// ================= DATABASE =================
+
 DBConnect();
-dotenv.config()
-// Security & compression
-app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
+
+// ================= SECURITY =================
+
+app.use(
+  helmet({
+    crossOriginResourcePolicy: {
+      policy: "cross-origin",
+    },
+  })
+);
+
+// ================= COMPRESSION =================
+
 app.use(
   compression({
     level: 6,
@@ -23,64 +38,98 @@ app.use(
   })
 );
 
-// CORS
+// ================= CORS =================
+dotenv.config()
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
   "http://localhost:3000",
+
   "https://e-commerce-system-frontend.vercel.app",
-  "https://e-commerce-system-frontend.vercel.app/admin",
+
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
-        callback(null, true);
-      } else {
-        callback(null, origin || true);
+      if (!origin) {
+        return callback(null, true);
       }
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      // Allow Vercel deployments
+      if (origin.endsWith(".vercel.app")) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
     },
+
     credentials: true,
   })
 );
 
+// ================= MIDDLEWARE =================
+
 app.use(cookieParser());
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+
+app.use(
+  express.json({
+    limit: "10mb",
+  })
+);
+
+app.use(
+  express.urlencoded({
+    extended: true,
+    limit: "10mb",
+  })
+);
+
+// ================= ROUTES =================
 
 app.use("/api/v1/admin", AdminRoutes);
+
 app.use("/api/v1/order", Showorder);
+
 app.use("/api/v1/user", Alluser);
+
 app.use("/api/v1/edit", EditRouter);
 
+// ================= TEST ROUTE =================
+
 app.get("/", (req, res) => {
-  res.send("server admins running");
+  res.status(200).json({
+    success: true,
+    message: "Admin server running successfully ",
+  });
 });
 
-// Global Error Handler Middleware (logs errors to console)
+// ================= ERROR HANDLER =================
+
 app.use((err, req, res, next) => {
+  console.error("ERROR:", err);
 
   res.status(err.status || 500).json({
+    success: false,
     message: err.message || "Internal Server Error",
-    ...(process.env.NODE_ENV !== "production" && { error: err.message }),
   });
 });
 
-process.on("unhandledRejection", (reason, promise) => {
+// ================= LOCAL SERVER =================
 
-});
-
-process.on("uncaughtException", (err) => {
-
-});
-
-if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {
+if (!process.env.VERCEL) {
   const PORT = process.env.AdminPORT || 8000;
+
   app.listen(PORT, () => {
-    console.log(`🚀 Admin server running on port ${PORT}`);
+    console.log(`admin server running on port ${PORT}`);
   });
 }
+
+// ================= VERCEL =================
 
 export default app;
