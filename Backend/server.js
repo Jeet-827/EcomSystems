@@ -137,9 +137,7 @@ process.on("uncaughtException", (err) => {
 if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {
   const PORT = process.env.PORT || 5000;
   app.listen(PORT, () => {
-    if (process.env.NODE_ENV !== "production") {
-      console.log(`Server running on port ${PORT}`);
-    }
+    console.log(`🚀 Server running on port ${PORT}`);
   });
 }
 

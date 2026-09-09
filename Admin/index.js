@@ -76,9 +76,7 @@ process.on("uncaughtException", (err) => {
 if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {
   const PORT = process.env.AdminPORT || 8000;
   app.listen(PORT, () => {
-    if (process.env.NODE_ENV !== "production") {
-      console.log(`Admin server running on port ${PORT}`);
-    }
+    console.log(`🚀 Admin server running on port ${PORT}`);
   });
 }
 
