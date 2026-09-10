@@ -41,9 +41,6 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
   "http://localhost:3000",
-
-  "https://e-commerce-system-frontend.vercel.app",
-
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 
@@ -58,8 +55,8 @@ app.use(
         return callback(null, true);
       }
 
-      // Allow Vercel deployments
-      if (origin.endsWith(".vercel.app")) {
+      // Allow Vercel & Render deployments
+      if (origin.endsWith(".vercel.app") || origin.endsWith(".onrender.com")) {
         return callback(null, true);
       }
 
@@ -117,15 +114,13 @@ app.use((err, req, res, next) => {
   });
 });
 
-// ================= LOCAL SERVER =================
+// ================= SERVER =================
 
-if (!process.env.VERCEL) {
-  const PORT = process.env.AdminPORT || 8000;
+const PORT = process.env.PORT || process.env.AdminPORT || 8000;
 
-  app.listen(PORT, () => {
-    console.log(`admin server running on port ${PORT}`);
-  });
-}
+app.listen(PORT, () => {
+  console.log(`Admin server running on port ${PORT}`);
+});
 
 // ================= VERCEL =================
 

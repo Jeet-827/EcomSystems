@@ -1,0 +1,94 @@
+services:
+  # ─────────────────────────────────────────────────────────────
+  # 1. BACKEND API  (Express – User auth, products, cart, orders)
+  # ─────────────────────────────────────────────────────────────
+  - type: web
+    name: ecomm-backend
+    runtime: node
+    region: singapore
+    plan: free
+    buildCommand: cd Backend && npm install
+    startCommand: cd Backend && node server.js
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: MONGO_URL
+        sync: false
+      - key: SECRET_ONE
+        sync: false
+      - key: SECRET_TWO
+        sync: false
+      - key: ADMINKEY
+        sync: false
+      - key: publicKey
+        sync: false
+      - key: privateKey
+        sync: false
+      - key: urlEndpoint
+        sync: false
+      - key: RAZOR_1
+        sync: false
+      - key: RAZOR_2
+        sync: false
+      - key: FRONTEND_URL
+        value: https://ecomm-frontend.onrender.com
+
+  # ─────────────────────────────────────────────────────────────
+  # 2. ADMIN API  (Express – Admin auth, product/order management)
+  # ─────────────────────────────────────────────────────────────
+  - type: web
+    name: ecomm-admin
+    runtime: node
+    region: singapore
+    plan: free
+    buildCommand: cd Admin && npm install
+    startCommand: cd Admin && node index.js
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 8000
+      - key: MONGO_URL
+        sync: false
+      - key: ADMINKEY
+        sync: false
+      - key: publicKey
+        sync: false
+      - key: privateKey
+        sync: false
+      - key: urlEndpoint
+        sync: false
+      - key: FRONTEND_URL
+        value: https://ecomm-frontend.onrender.com
+
+  # ─────────────────────────────────────────────────────────────
+  # 3. FRONTEND  (React 19 + Vite – Static Site)
+  # ─────────────────────────────────────────────────────────────
+  - type: web
+    name: ecomm-frontend
+    runtime: static
+    region: singapore
+    plan: free
+    buildCommand: cd Frontend && npm install && npm run build
+    staticPublishPath: Frontend/dist
+    pullRequestPreviewsEnabled: false
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=0, must-revalidate
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        value: https://ecomm-backend.onrender.com
+      - key: VITE_ADMIN_API_URL
+        value: https://ecomm-admin.onrender.com
