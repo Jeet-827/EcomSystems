@@ -247,7 +247,7 @@ const Customersmanage = () => {
                           </td>
                           <td>
                             <div className="flex items-center gap-3">
-                              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white flex items-center justify-center font-bold text-xs shadow-sm">
                                 {initials}
                               </div>
                               <span className="font-bold text-xs sm:text-sm text-[var(--admin-text-main)]">
@@ -302,7 +302,7 @@ const Customersmanage = () => {
 
       {/* Customer Inspect Drawer/Modal */}
       {selectedUser && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="admin-card p-6 sm:p-7 max-w-lg w-full space-y-5 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between pb-3 border-b border-[var(--admin-card-border-subtle)]">
               <div className="flex items-center gap-3">

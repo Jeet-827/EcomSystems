@@ -163,6 +163,8 @@
 
 .admin-main {
   flex: 1;
+  min-width: 0;
+  width: 100%;
   padding: 1.5rem 1rem;
   overflow-y: auto;
   background-color: var(--admin-bg);
@@ -287,6 +289,27 @@
   font-size: 0.875rem;
   outline: none;
   transition: all 0.2s ease;
+}
+
+/* Icon padding overrides to avoid text-icon overlap */
+.admin-input.pl-10,
+.relative > .admin-input.pl-10 {
+  padding-left: 2.75rem !important;
+}
+
+.admin-input.pl-9,
+.relative > .admin-input.pl-9 {
+  padding-left: 2.5rem !important;
+}
+
+.admin-input.pl-8,
+.relative > .admin-input.pl-8 {
+  padding-left: 2.25rem !important;
+}
+
+.admin-input.pr-10,
+.relative > .admin-input.pr-10 {
+  padding-right: 2.75rem !important;
 }
 
 .admin-input::placeholder {
@@ -555,9 +578,12 @@
 
 /* ── Animations ── */
 @keyframes adminPulseGlow {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4);
   }
+
   50% {
     box-shadow: 0 0 0 8px rgba(99, 102, 241, 0);
   }

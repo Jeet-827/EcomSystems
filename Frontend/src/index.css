@@ -20,6 +20,13 @@ body,
   color: #0f172a;
 }
 
+html.dark,
+html.dark body,
+html.dark #root {
+  background-color: #090d16;
+  color: #f8fafc;
+}
+
 /* ── Smooth custom scrollbars ── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: #f8fafc; }
@@ -83,8 +90,8 @@ body,
 @media (max-width: 767px) {
   .banner-slide {
     flex-direction: column-reverse;
-    padding: 2rem 1.25rem 1.5rem;
-    min-height: 480px;
+    padding: 1.5rem 1rem 6rem;
+    min-height: 520px;
   }
 }
 
@@ -194,7 +201,13 @@ body,
   justify-content: center;
   width: clamp(200px, 38%, 380px);
 }
-@media (max-width: 767px) { .banner-img-wrap { width: 100%; max-height: 220px; } }
+@media (max-width: 767px) {
+  .banner-img-wrap {
+    width: 100%;
+    max-height: 160px;
+    margin-bottom: 0.5rem;
+  }
+}
 
 .banner-img-glow {
   position: absolute;
@@ -213,7 +226,23 @@ body,
   border-radius: 12px;
   animation: floatUp 0.6s ease both 0.1s;
 }
-@media (max-width: 767px) { .banner-img { max-height: 200px; } }
+@media (max-width: 767px) {
+  .banner-img {
+    max-height: 150px;
+  }
+  .banner-btns {
+    width: 100%;
+    display: flex;
+    gap: 0.5rem;
+  }
+  .banner-btn-primary,
+  .banner-btn-secondary {
+    flex: 1;
+    padding: 0.6rem 0.75rem;
+    font-size: 0.8rem;
+    text-align: center;
+  }
+}
 
 /* Arrow buttons */
 .banner-arrow {
@@ -253,7 +282,12 @@ body,
   overflow-x: auto;
   padding: 0.25rem;
 }
-@media (max-width: 480px) { .banner-tabs { bottom: 2.5rem; } }
+@media (max-width: 767px) {
+  .banner-tabs {
+    bottom: 0.75rem;
+    max-width: 95%;
+  }
+}
 
 .banner-tab {
   display: flex;

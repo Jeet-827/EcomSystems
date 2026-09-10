@@ -273,7 +273,7 @@ const Orders = () => {
                     onClick={() => setStatusFilter(status)}
                     className={`px-3 py-1.5 rounded-xl font-bold capitalize transition-all flex-shrink-0 cursor-pointer ${
                       statusFilter === status
-                        ? "bg-indigo-600 text-white shadow-xs"
+                        ? "bg-indigo-600 text-white shadow-sm"
                         : "bg-[var(--admin-bg-secondary)] text-[var(--admin-text-muted)] hover:text-[var(--admin-text-main)]"
                     }`}
                   >

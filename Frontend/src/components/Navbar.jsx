@@ -242,7 +242,7 @@ function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-xs">
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-sm">
         {/* Brand */}
         <Link to="/home" className="flex items-center gap-2.5 group cursor-pointer flex-shrink-0">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white flex items-center justify-center font-bold text-base shadow-sm group-hover:scale-105 transition-transform">
@@ -263,7 +263,7 @@ function Navbar() {
               onChange={(e) => setSearchTerm(e.target.value)}
               onFocus={() => { if (searchTerm) setShowDropdown(true); }}
               onKeyDown={handleKeyDown}
-              className="w-full bg-slate-50 hover:bg-slate-100/80 focus:bg-white text-slate-900 border border-slate-200 rounded-2xl py-2.5 pl-4 pr-11 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-xs"
+              className="w-full bg-slate-50 hover:bg-slate-100/80 focus:bg-white text-slate-900 border border-slate-200 rounded-2xl py-2.5 pl-4 pr-11 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-sm"
             />
             <FaSearch
               size={14}

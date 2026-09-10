@@ -230,7 +230,7 @@ const Manageproduct = () => {
                   onClick={() => setViewMode("grid")}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                     viewMode === "grid"
-                      ? "bg-[var(--admin-card-bg)] text-[var(--admin-accent)] shadow-xs"
+                      ? "bg-[var(--admin-card-bg)] text-[var(--admin-accent)] shadow-sm"
                       : "text-[var(--admin-text-muted)] hover:text-[var(--admin-text-main)]"
                   }`}
                 >
@@ -240,7 +240,7 @@ const Manageproduct = () => {
                   onClick={() => setViewMode("table")}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                     viewMode === "table"
-                      ? "bg-[var(--admin-card-bg)] text-[var(--admin-accent)] shadow-xs"
+                      ? "bg-[var(--admin-card-bg)] text-[var(--admin-accent)] shadow-sm"
                       : "text-[var(--admin-text-muted)] hover:text-[var(--admin-text-main)]"
                   }`}
                 >
@@ -258,7 +258,7 @@ const Manageproduct = () => {
                 onClick={() => setSelectedCategory("all")}
                 className={`px-3 py-1.5 rounded-full font-bold transition-all flex-shrink-0 cursor-pointer ${
                   selectedCategory === "all"
-                    ? "bg-indigo-600 text-white shadow-xs"
+                    ? "bg-indigo-600 text-white shadow-sm"
                     : "bg-[var(--admin-bg-secondary)] text-[var(--admin-text-muted)] hover:text-[var(--admin-text-main)]"
                 }`}
               >
@@ -273,7 +273,7 @@ const Manageproduct = () => {
                     onClick={() => setSelectedCategory(cat)}
                     className={`px-3 py-1.5 rounded-full font-bold transition-all flex-shrink-0 cursor-pointer ${
                       selectedCategory === cat
-                        ? "bg-indigo-600 text-white shadow-xs"
+                        ? "bg-indigo-600 text-white shadow-sm"
                         : "bg-[var(--admin-bg-secondary)] text-[var(--admin-text-muted)] hover:text-[var(--admin-text-main)]"
                     }`}
                   >
@@ -345,7 +345,7 @@ const Manageproduct = () => {
                         }}
                       />
                       {product.category && (
-                        <span className="absolute top-3 left-3 px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wider bg-black/70 backdrop-blur-xs text-white border border-white/20 shadow-xs">
+                        <span className="absolute top-3 left-3 px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wider bg-black/70 backdrop-blur-sm text-white border border-white/20 shadow-sm">
                           {product.category}
                         </span>
                       )}
@@ -476,7 +476,7 @@ const Manageproduct = () => {
 
       {/* Delete Confirmation Modal */}
       {deleteModal.open && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="admin-card p-6 sm:p-7 max-w-md w-full space-y-5 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
             <div className="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center text-2xl mx-auto">
               ⚠️

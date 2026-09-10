@@ -118,7 +118,7 @@ const PromoBannerCard = memo(({ tag, title, discount, image, productId, color, o
 
     <div className="flex items-stretch h-full">
       {/* Text Side */}
-      <div className="flex-1 p-5 flex flex-col justify-between z-10">
+      <div className="flex-1 p-4 sm:p-5 flex flex-col justify-between z-10 min-w-0">
         <div>
           <span
             className="inline-block px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest text-white mb-2"
@@ -126,25 +126,25 @@ const PromoBannerCard = memo(({ tag, title, discount, image, productId, color, o
           >
             {tag}
           </span>
-          <h4 className="text-sm sm:text-base font-bold text-slate-900 leading-snug line-clamp-2 mb-3">
+          <h4 className="text-sm sm:text-base font-bold text-slate-900 leading-snug line-clamp-2 mb-2">
             {title}
           </h4>
         </div>
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex flex-wrap sm:flex-nowrap items-baseline sm:items-center justify-between gap-1.5 pt-2">
           <span
-            className="text-lg font-black"
+            className="text-base sm:text-lg font-black"
             style={{ color }}
           >
             {discount}
           </span>
-          <span className="text-xs font-bold text-slate-500 group-hover:text-indigo-600 transition-colors">
+          <span className="text-[11px] sm:text-xs font-bold text-slate-500 group-hover:text-indigo-600 transition-colors whitespace-nowrap">
             Explore Now →
           </span>
         </div>
       </div>
       {/* Image Side */}
       {image && (
-        <div className="flex-shrink-0 w-28 sm:w-36 relative overflow-hidden bg-slate-50 flex items-center justify-center">
+        <div className="flex-shrink-0 w-24 sm:w-36 relative overflow-hidden bg-slate-50 flex items-center justify-center">
           <img
             src={image}
             alt={title}

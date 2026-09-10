@@ -49,7 +49,7 @@ const Logout = () => {
 
       <main className="admin-main flex items-center justify-center min-h-[85vh]">
         <div className="admin-card p-8 sm:p-10 max-w-md w-full text-center space-y-6 shadow-xl border border-[var(--admin-card-border)]">
-          <div className="w-16 h-16 rounded-2xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center text-3xl mx-auto shadow-xs">
+          <div className="w-16 h-16 rounded-2xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center text-3xl mx-auto shadow-sm">
             🚪
           </div>
 
