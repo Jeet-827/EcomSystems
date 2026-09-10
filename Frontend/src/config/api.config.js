@@ -17,4 +17,5 @@ const getApiUrl = (envUrl, defaultLocalPort) => {
 };
 
 export const API_BASE_URL = getApiUrl(import.meta.env.VITE_API_URL, 5000);
-export const ADMIN_API_BASE_URL = getApiUrl(import.meta.env.VITE_ADMIN_API_URL || import.meta.env.VITE_API_URL, 5000);
+// Admin server runs on port 8000 (separate from Backend port 5000)
+export const ADMIN_API_BASE_URL = getApiUrl(import.meta.env.VITE_ADMIN_API_URL, 8000);

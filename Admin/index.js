@@ -1,11 +1,9 @@
-
-
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import compression from "compression";
 import helmet from "helmet";
-import dotenv from "dotenv";
 import DBConnect from "./config/db.config.js";
 
 import Showorder from "./routes/order.routes.js";
@@ -39,7 +37,6 @@ app.use(
 );
 
 // ================= CORS =================
-dotenv.config()
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
