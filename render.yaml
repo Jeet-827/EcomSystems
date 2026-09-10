@@ -3,7 +3,7 @@ services:
   # 1. BACKEND API  (Express – User auth, products, cart, orders)
   # ─────────────────────────────────────────────────────────────
   - type: web
-    name: ecomm-backend
+    name: ecomsystems-backend
     runtime: node
     region: singapore
     plan: free
@@ -34,13 +34,13 @@ services:
       - key: RAZOR_2
         sync: false
       - key: FRONTEND_URL
-        value: https://ecomm-frontend.onrender.com
+        value: https://ecomsystems-frontend.onrender.com
 
   # ─────────────────────────────────────────────────────────────
   # 2. ADMIN API  (Express – Admin auth, product/order management)
   # ─────────────────────────────────────────────────────────────
   - type: web
-    name: ecomm-admin
+    name: ecomsystems-admin
     runtime: node
     region: singapore
     plan: free
@@ -63,13 +63,13 @@ services:
       - key: urlEndpoint
         sync: false
       - key: FRONTEND_URL
-        value: https://ecomm-frontend.onrender.com
+        value: https://ecomsystems-frontend.onrender.com
 
   # ─────────────────────────────────────────────────────────────
   # 3. FRONTEND  (React 19 + Vite – Static Site)
   # ─────────────────────────────────────────────────────────────
   - type: web
-    name: ecomm-frontend
+    name: ecomsystems-frontend
     runtime: static
     buildCommand: cd Frontend && npm install && npm run build
     staticPublishPath: Frontend/dist
@@ -87,6 +87,6 @@ services:
         destination: /index.html
     envVars:
       - key: VITE_API_URL
-        value: https://ecomm-backend.onrender.com
+        value: https://ecomsystems-backend.onrender.com
       - key: VITE_ADMIN_API_URL
-        value: https://ecomm-admin.onrender.com
+        value: https://ecomsystems-admin.onrender.com
