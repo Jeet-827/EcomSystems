@@ -12,7 +12,7 @@ function Register() {
   const [message, setMessage] = useState({ text: "", type: "" });
 
   const navigate = useNavigate();
-  const { setUser,setToken } = useUser();
+  const { setUser, setToken } = useUser();
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -24,15 +24,11 @@ function Register() {
       const res = await axios.post(
         `${API_BASE_URL}/api/v1/signup`,
         data,
-        { withCredentials: true },
+        { withCredentials: true }
       );
       setUser(res.data.user);
       setToken(res.data.AccessToken || res.data.Accesstoken || res.data.accessToken);
-
-      setMessage({
-        text: res.data.message || "Account created!",
-        type: "success",
-      });
+      setMessage({ text: res.data.message || "Account created!", type: "success" });
       navigate("/home");
     } catch (error) {
       const errMsg = error.response?.data?.message || "Something went wrong!";
@@ -43,97 +39,137 @@ function Register() {
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-grid" />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/40 to-purple-50/30 flex items-center justify-center p-4">
+      {/* Subtle grid background */}
+      <div
+        className="fixed inset-0 pointer-events-none opacity-30"
+        style={{
+          backgroundImage: "radial-gradient(circle, #6366f1 1px, transparent 1px)",
+          backgroundSize: "40px 40px",
+        }}
+      />
 
-      <div className="auth-card">
-        <div className="auth-brand">
-          <div className="auth-brand-icon">⚡</div>
-          <span className="auth-brand-name">E-System</span>
+      <div className="relative w-full max-w-sm">
+        {/* Card */}
+        <div className="bg-white rounded-3xl shadow-2xl shadow-indigo-100 border border-slate-200/80 p-7 sm:p-8 space-y-6">
+          {/* Brand */}
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white flex items-center justify-center font-black text-base shadow-sm">
+              ⚡
+            </div>
+            <span className="font-black text-slate-900 text-lg tracking-tight">E-System</span>
+          </div>
+
+          {/* Header */}
+          <div>
+            <h1 className="text-2xl font-black text-slate-900 tracking-tight">Create account</h1>
+            <p className="text-slate-500 text-sm mt-1">Join E-System today — it's free!</p>
+          </div>
+
+          {/* Alert */}
+          {message.text && (
+            <div
+              className={`flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold border ${
+                message.type === "success"
+                  ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+                  : "bg-rose-50 border-rose-200 text-rose-700"
+              }`}
+            >
+              <span>{message.type === "success" ? "✅" : "⚠️"}</span>
+              <span>{message.text}</span>
+            </div>
+          )}
+
+          {/* Form */}
+          <form className="space-y-4" onSubmit={handleRegister}>
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider" htmlFor="reg-name">
+                Full Name
+              </label>
+              <div className="relative">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-base pointer-events-none">👤</span>
+                <input
+                  id="reg-name"
+                  type="text"
+                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white focus:border-indigo-400 transition-all"
+                  placeholder="John Doe"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                  autoComplete="name"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider" htmlFor="reg-email">
+                Email
+              </label>
+              <div className="relative">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-base pointer-events-none">✉️</span>
+                <input
+                  id="reg-email"
+                  type="email"
+                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white focus:border-indigo-400 transition-all"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  autoComplete="email"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider" htmlFor="reg-password">
+                Password
+              </label>
+              <div className="relative">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-base pointer-events-none">🔒</span>
+                <input
+                  id="reg-password"
+                  type="password"
+                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white focus:border-indigo-400 transition-all"
+                  placeholder="Create a strong password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  autoComplete="new-password"
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 px-6 rounded-xl font-bold text-sm text-white bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed shadow-md hover:shadow-lg hover:shadow-indigo-200 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
+            >
+              {loading && (
+                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin inline-block" />
+              )}
+              {loading ? "Creating account..." : "Create Account →"}
+            </button>
+          </form>
+
+          {/* Divider */}
+          <div className="flex items-center gap-3">
+            <div className="flex-1 h-px bg-slate-200" />
+            <span className="text-xs text-slate-400 font-semibold">or</span>
+            <div className="flex-1 h-px bg-slate-200" />
+          </div>
+
+          {/* Redirect */}
+          <p className="text-center text-xs text-slate-500">
+            Already have an account?{" "}
+            <Link to="/login" className="font-bold text-indigo-600 hover:text-indigo-700 hover:underline transition-colors">
+              Sign in
+            </Link>
+          </p>
         </div>
 
-        <div className="auth-header">
-          <h1 className="auth-title">Create account</h1>
-          <p className="auth-subtitle">Join E-System today — it's free!</p>
-        </div>
-
-        {message.text && (
-          <div
-            className={`auth-alert ${message.type}`}
-            style={{ marginBottom: "1rem" }}
-          >
-            {message.type === "success" ? "✅" : "⚠️"} {message.text}
-          </div>
-        )}
-
-        <form className="auth-form" onSubmit={handleRegister}>
-          <div className="form-group">
-            <label className="form-label" htmlFor="reg-name">
-              Full Name
-            </label>
-            <div className="form-input-wrapper">
-              <span className="form-input-icon">👤</span>
-              <input
-                id="reg-name"
-                type="text"
-                className="form-input"
-                placeholder="John Doe"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                autoComplete="name"
-              />
-            </div>
-          </div>
-
-          <div className="form-group">
-            <label className="form-label" htmlFor="reg-email">
-              Email
-            </label>
-            <div className="form-input-wrapper">
-              <span className="form-input-icon">✉️</span>
-              <input
-                id="reg-email"
-                type="email"
-                className="form-input"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                autoComplete="email"
-              />
-            </div>
-          </div>
-
-          <div className="form-group">
-            <label className="form-label" htmlFor="reg-password">
-              Password
-            </label>
-            <div className="form-input-wrapper">
-              <span className="form-input-icon">🔒</span>
-              <input
-                id="reg-password"
-                type="password"
-                className="form-input"
-                placeholder="Create a strong password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                autoComplete="new-password"
-              />
-            </div>
-          </div>
-
-          <button type="submit" className="auth-btn" disabled={loading}>
-            {loading && <span className="btn-spinner" />}
-            {loading ? "Creating account..." : "Create Account →"}
-          </button>
-        </form>
-
-        <div className="auth-divider">or</div>
-
-        <p className="auth-redirect">
-          Already have an account? <Link to="/login">Sign in</Link>
+        {/* Back to home */}
+        <p className="text-center mt-4 text-xs text-slate-500">
+          <Link to="/" className="hover:text-indigo-600 transition-colors font-semibold">← Back to Home</Link>
         </p>
       </div>
     </div>
