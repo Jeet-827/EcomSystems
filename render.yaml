@@ -71,7 +71,6 @@ services:
   - type: web
     name: ecomm-frontend
     runtime: static
-    region: singapore
     plan: free
     buildCommand: cd Frontend && npm install && npm run build
     staticPublishPath: Frontend/dist
