@@ -34,7 +34,7 @@ services:
       - key: RAZOR_2
         sync: false
       - key: FRONTEND_URL
-        value: https://ecomsystems-frontend.onrender.com
+        value: https://ecomm-frontend-fl8i.onrender.com
 
   # ─────────────────────────────────────────────────────────────
   # 2. ADMIN API  (Express – Admin auth, product/order management)
@@ -87,6 +87,6 @@ services:
         destination: /index.html
     envVars:
       - key: VITE_API_URL
-        value: https://ecomsystems-backend.onrender.com
+        value: https://ecomm-backend-4wrf.onrender.com
       - key: VITE_ADMIN_API_URL
-        value: https://ecomsystems-admin.onrender.com
+        value: https://ecomm-backend-4wrf.onrender.com

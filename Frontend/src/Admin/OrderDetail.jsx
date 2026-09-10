@@ -13,7 +13,6 @@ function OrderDetail() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    // If order was not passed via state, fetch it from backend
     if (!order && id) {
       const fetchOrderDetail = async () => {
         try {
@@ -42,233 +41,307 @@ function OrderDetail() {
     }
   }, [id, order]);
 
-  // Calculate order subtotal
+  // Subtotal calculation
   const subtotal =
     order?.productid?.reduce((sum, item) => {
       const price = parseFloat(item?.price) || 0;
       return sum + price;
     }, 0) || 0;
 
-  const shippingFee = 0; // Free shipping
+  const shippingFee = 0;
   const grandTotal = subtotal + shippingFee;
+  const isPaid = (order?.payment || "").toLowerCase() === "paid";
+  const currentStatus = (order?.status || "pending").toLowerCase();
 
-  const isPending = order?.status?.toLowerCase() === "pending";
-  const isPaid = order?.payment?.toLowerCase() === "paid";
+  const statusSteps = ["pending", "shipping", "delivered"];
+  const currentStepIndex = statusSteps.indexOf(currentStatus);
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 flex font-sans">
-      {/* Sidebar Nav */}
+    <div className="admin-layout font-sans">
       <Nav />
 
-      {/* Main Content */}
-      <div className="flex-1 py-10 px-4 sm:px-6 lg:px-8 overflow-y-auto bg-white">
+      <main className="admin-main">
         <div className="max-w-5xl mx-auto space-y-6">
-          {/* Back Link */}
-          <div>
+          
+          {/* Breadcrumb & Print Toolbar */}
+          <div className="flex items-center justify-between pb-4 border-b border-[var(--admin-card-border)]">
             <Link
               to="/order"
-              className="inline-flex items-center gap-2 text-sm font-bold text-indigo-600 hover:text-indigo-700 transition-colors"
+              className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-[var(--admin-accent)] hover:underline transition-all"
             >
               <span>←</span> Back to All Orders
             </Link>
+
+            <button
+              onClick={() => window.print()}
+              className="admin-btn-secondary text-xs py-1.5 px-3 print:hidden"
+            >
+              🖨️ Print Invoice
+            </button>
           </div>
 
-          {/* Loading State */}
+          {/* Loading */}
           {loading && (
-            <div className="text-center py-20 bg-slate-50 border border-slate-200 rounded-2xl animate-pulse">
-              <p className="text-slate-500 text-sm">Loading order details...</p>
+            <div className="admin-card p-16 text-center">
+              <div className="w-10 h-10 border-4 border-indigo-500/20 border-t-indigo-600 rounded-full animate-spin mx-auto mb-3" />
+              <p className="text-sm font-semibold text-[var(--admin-text-muted)]">
+                Loading order information...
+              </p>
             </div>
           )}
 
-          {/* Error State */}
+          {/* Error Alert */}
           {error && (
-            <div className="p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl text-sm flex items-center justify-between">
+            <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs sm:text-sm flex items-center justify-between">
               <span>{error}</span>
-              <Link to="/order" className="text-xs underline text-rose-600 font-bold">
+              <Link to="/order" className="underline font-bold">
                 Return to Orders
               </Link>
             </div>
           )}
 
-          {/* Order Details View */}
           {!loading && order && (
             <div className="space-y-6">
+              
               {/* Header Card */}
-              <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-7 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="admin-card p-6 sm:p-7 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                    Order Details
-                  </span>
-                  <h1 className="text-xl sm:text-2xl font-mono font-extrabold text-slate-900 mt-1">
-                    #{order._id} - {order.userid?.name || (typeof order.userid === "string" ? order.userid : "N/A")}
-                  </h1>
-                  <p className="text-xs text-slate-500 mt-1">
-                    Placed on:{" "}
-                    <span className="text-slate-800 font-semibold">
-                      {order.createdAt
-                        ? new Date(order.createdAt).toLocaleString("en-IN", {
-                            dateStyle: "medium",
-                            timeStyle: "short",
-                          })
-                        : "N/A"}
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold uppercase tracking-wider text-[var(--admin-text-subtle)]">
+                      Order Reference
                     </span>
+                    <span
+                      className={`admin-badge ${
+                        isPaid ? "admin-badge-paid" : "admin-badge-cod"
+                      }`}
+                    >
+                      {isPaid ? "💳 Paid" : "💵 COD"}
+                    </span>
+                  </div>
+                  <h2 className="text-xl sm:text-2xl font-black text-[var(--admin-text-main)] font-mono mt-1">
+                    #{order._id}
+                  </h2>
+                  <p className="text-xs text-[var(--admin-text-muted)] mt-1">
+                    Placed on{" "}
+                    {order.createdAt
+                      ? new Date(order.createdAt).toLocaleDateString("en-IN", {
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                      : "Recent"}
                   </p>
                 </div>
 
-                {/* Status & Payment Badges */}
-                <div className="flex flex-wrap items-center gap-2.5">
-                  <span
-                    className={`px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider border ${
-                      isPending
-                        ? "bg-amber-100 text-amber-800 border-amber-300"
-                        : "bg-emerald-100 text-emerald-800 border-emerald-300"
-                    }`}
-                  >
-                    Status: {order.status}
+                <div className="text-left sm:text-right">
+                  <span className="text-xs text-[var(--admin-text-muted)] block">
+                    Total Amount
                   </span>
-
-                  <span
-                    className={`px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider border ${
-                      isPaid
-                        ? "bg-emerald-100 text-emerald-800 border-emerald-300"
-                        : "bg-rose-100 text-rose-800 border-rose-300"
-                    }`}
-                  >
-                    Payment: {order.payment}
+                  <span className="text-2xl sm:text-3xl font-black text-[var(--admin-text-main)]">
+                    ₹{grandTotal.toLocaleString("en-IN")}
                   </span>
                 </div>
               </div>
 
-              {/* Main Content Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Left Column: Products List (2 Cols on Large) */}
-                <div className="lg:col-span-2 space-y-4">
-                  <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
-                    <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 pb-3 border-b border-slate-100 flex items-center justify-between">
-                      <span>Purchased Items</span>
-                      <span className="text-xs font-bold text-indigo-600">
-                        {order.productid?.length || 0} product(s)
+              {/* Status Timeline Card */}
+              <div className="admin-card p-6">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--admin-text-muted)] mb-5">
+                  Order Fulfillment Timeline
+                </h3>
+
+                <div className="flex items-center justify-between relative max-w-xl mx-auto px-4 sm:px-8">
+                  {/* Connecting Line */}
+                  <div className="absolute left-10 right-10 top-1/2 -translate-y-1/2 h-1 bg-[var(--admin-card-border)] -z-0" />
+
+                  {/* Pending Step */}
+                  <div className="flex flex-col items-center relative z-10 space-y-1.5">
+                    <div
+                      className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs ${
+                        currentStepIndex >= 0
+                          ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/30"
+                          : "bg-[var(--admin-bg-secondary)] text-[var(--admin-text-muted)] border border-[var(--admin-card-border)]"
+                      }`}
+                    >
+                      ✓
+                    </div>
+                    <span className="text-[11px] font-bold text-[var(--admin-text-main)]">
+                      Placed
+                    </span>
+                  </div>
+
+                  {/* Shipping Step */}
+                  <div className="flex flex-col items-center relative z-10 space-y-1.5">
+                    <div
+                      className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs ${
+                        currentStepIndex >= 1
+                          ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/30"
+                          : "bg-[var(--admin-bg-secondary)] text-[var(--admin-text-muted)] border border-[var(--admin-card-border)]"
+                      }`}
+                    >
+                      {currentStepIndex >= 1 ? "✓" : "2"}
+                    </div>
+                    <span className="text-[11px] font-bold text-[var(--admin-text-main)]">
+                      Shipping
+                    </span>
+                  </div>
+
+                  {/* Delivered Step */}
+                  <div className="flex flex-col items-center relative z-10 space-y-1.5">
+                    <div
+                      className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs ${
+                        currentStepIndex >= 2
+                          ? "bg-emerald-600 text-white shadow-md shadow-emerald-500/30"
+                          : "bg-[var(--admin-bg-secondary)] text-[var(--admin-text-muted)] border border-[var(--admin-card-border)]"
+                      }`}
+                    >
+                      {currentStepIndex >= 2 ? "✓" : "3"}
+                    </div>
+                    <span className="text-[11px] font-bold text-[var(--admin-text-main)]">
+                      Delivered
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Customer Shipping & Payment Info Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Customer Information */}
+                <div className="admin-card p-6 space-y-3">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--admin-text-muted)] pb-2 border-b border-[var(--admin-card-border-subtle)]">
+                    Customer Information
+                  </h3>
+                  <div className="space-y-2 text-xs">
+                    <div>
+                      <span className="text-[var(--admin-text-subtle)] block">Name</span>
+                      <span className="font-bold text-[var(--admin-text-main)] text-sm">
+                        {order.name || "N/A"}
                       </span>
-                    </h2>
+                    </div>
+                    <div>
+                      <span className="text-[var(--admin-text-subtle)] block">Email</span>
+                      <span className="font-mono text-[var(--admin-text-main)]">
+                        {order.email}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-[var(--admin-text-subtle)] block">Shipping Address</span>
+                      <span className="text-[var(--admin-text-main)] font-medium">
+                        {order.address || "Address not provided"}
+                      </span>
+                    </div>
+                    {order.phone && (
+                      <div>
+                        <span className="text-[var(--admin-text-subtle)] block">Phone</span>
+                        <span className="text-[var(--admin-text-main)] font-medium">
+                          {order.phone}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
 
-                    <div className="space-y-3">
-                      {order.productid?.map((prod, index) => {
-                        const img = Array.isArray(prod?.productimage)
-                          ? prod.productimage[0]
-                          : prod?.productimage;
+                {/* Financial Breakdown */}
+                <div className="admin-card p-6 space-y-3">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--admin-text-muted)] pb-2 border-b border-[var(--admin-card-border-subtle)]">
+                    Payment Summary
+                  </h3>
+                  <div className="space-y-2 text-xs">
+                    <div className="flex justify-between">
+                      <span className="text-[var(--admin-text-muted)]">Payment Mode</span>
+                      <span className="font-bold text-[var(--admin-text-main)] capitalize">
+                        {order.payment || "Online"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-[var(--admin-text-muted)]">Subtotal ({order.productid?.length || 0} items)</span>
+                      <span className="font-bold text-[var(--admin-text-main)]">
+                        ₹{subtotal.toLocaleString("en-IN")}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-[var(--admin-text-muted)]">Shipping Charges</span>
+                      <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                        FREE
+                      </span>
+                    </div>
+                    <div className="pt-2 border-t border-[var(--admin-card-border-subtle)] flex justify-between text-sm">
+                      <span className="font-black text-[var(--admin-text-main)]">Grand Total</span>
+                      <span className="font-black text-base text-[var(--admin-accent)]">
+                        ₹{grandTotal.toLocaleString("en-IN")}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
+              {/* Items Table */}
+              <div className="admin-table-container">
+                <div className="p-4 border-b border-[var(--admin-card-border)] bg-[var(--admin-card-header)]">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--admin-text-muted)]">
+                    Ordered Line Items
+                  </h3>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="admin-table">
+                    <thead>
+                      <tr>
+                        <th>Item</th>
+                        <th>Category</th>
+                        <th>Product ID</th>
+                        <th className="text-right">Price</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {order.productid?.map((p, idx) => {
+                        const img =
+                          p?.productimage?.[0] ||
+                          p?.image ||
+                          "https://via.placeholder.com/60?text=Item";
                         return (
-                          <div
-                            key={index}
-                            className="bg-slate-50 border border-slate-100 rounded-xl p-4 flex gap-4 items-center"
-                          >
-                            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg bg-white border border-slate-200 overflow-hidden shrink-0 flex items-center justify-center">
-                              {img ? (
+                          <tr key={idx}>
+                            <td>
+                              <div className="flex items-center gap-3">
                                 <img
                                   src={img}
-                                  alt={prod?.title || "Product"}
-                                  className="w-full h-full object-cover"
-                                  loading="lazy"
+                                  alt={p?.title || "Item"}
+                                  className="w-10 h-10 rounded-xl object-cover border border-[var(--admin-card-border)]"
                                 />
-                              ) : (
-                                <span className="text-xl">📦</span>
-                              )}
-                            </div>
-
-                            <div className="flex-1 min-w-0 space-y-1">
-                              <h3 className="text-sm sm:text-base font-bold text-slate-900 truncate">
-                                {prod?.title || "Untitled Product"}
-                              </h3>
-                              <p className="text-xs text-slate-500 line-clamp-2">
-                                {prod?.description || "No description provided."}
-                              </p>
-                              {prod?.category && (
-                                <span className="inline-block px-2 py-0.5 rounded text-[11px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
-                                  {prod.category}
-                                </span>
-                              )}
-                            </div>
-
-                            <div className="text-right shrink-0">
-                              <p className="text-base sm:text-lg font-extrabold text-slate-900">
-                                ₹{prod?.price || 0}
-                              </p>
-                            </div>
-                          </div>
+                                <div>
+                                  <p className="font-bold text-xs sm:text-sm text-[var(--admin-text-main)]">
+                                    {p?.title || "Product Item"}
+                                  </p>
+                                  <p className="text-[11px] text-[var(--admin-text-muted)] line-clamp-1">
+                                    {p?.description}
+                                  </p>
+                                </div>
+                              </div>
+                            </td>
+                            <td>
+                              <span className="admin-badge admin-badge-shipping text-[11px]">
+                                {p?.category || "General"}
+                              </span>
+                            </td>
+                            <td className="font-mono text-xs text-[var(--admin-text-muted)]">
+                              {p?._id?.slice(-8) || "N/A"}
+                            </td>
+                            <td className="text-right font-black text-[var(--admin-text-main)]">
+                              ₹{Number(p?.price || 0).toLocaleString("en-IN")}
+                            </td>
+                          </tr>
                         );
                       })}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Right Column: Customer Info & Payment Breakdown */}
-                <div className="space-y-6">
-                  {/* Customer & Shipping Box */}
-                  <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-3">
-                    <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 pb-3 border-b border-slate-100">
-                      Customer & Shipping Details
-                    </h2>
-
-                    <div className="space-y-2.5 text-sm">
-                      <div>
-                        <span className="text-xs text-slate-400 block font-semibold">CUSTOMER NAME</span>
-                        <p className="text-slate-800 font-bold">
-                          {order.userid?.name || (typeof order.userid === "string" ? order.userid : "N/A")}
-                        </p>
-                      </div>
-
-                      {order.userid?.email && (
-                        <div>
-                          <span className="text-xs text-slate-400 block font-semibold">EMAIL</span>
-                          <p className="text-slate-800 font-medium">{order.userid.email}</p>
-                        </div>
-                      )}
-
-                      <div>
-                        <span className="text-xs text-slate-400 block font-semibold">PHONE</span>
-                        <p className="text-slate-800 font-bold">{order.phonenumber || "N/A"}</p>
-                      </div>
-
-                      <div>
-                        <span className="text-xs text-slate-400 block font-semibold">DELIVERY ADDRESS</span>
-                        <p className="text-slate-700 font-medium leading-relaxed mt-0.5">
-                          {order.houseNo && `${order.houseNo}, `}
-                          {order.street && `${order.street}, `}
-                          {order.city && `${order.city}, `}
-                          {order.state && `${order.state} - `}
-                          {order.pincode && `${order.pincode}`}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Payment Summary Box */}
-                  <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-3">
-                    <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 pb-3 border-b border-slate-100">
-                      Order Summary
-                    </h2>
-
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between text-slate-600">
-                        <span>Items Subtotal</span>
-                        <span className="font-semibold text-slate-800">₹{subtotal}</span>
-                      </div>
-                      <div className="flex justify-between text-slate-600">
-                        <span>Shipping Fee</span>
-                        <span className="font-semibold text-emerald-600">FREE</span>
-                      </div>
-                      <div className="pt-3 border-t border-slate-100 flex justify-between items-center text-base font-extrabold text-slate-900">
-                        <span>Total Paid / Due</span>
-                        <span className="text-xl text-indigo-600">₹{grandTotal}</span>
-                      </div>
-                    </div>
-                  </div>
+                    </tbody>
+                  </table>
                 </div>
               </div>
+
             </div>
           )}
+
         </div>
-      </div>
+      </main>
     </div>
   );
 }

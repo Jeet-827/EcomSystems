@@ -2,13 +2,16 @@ import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import Nav from "./Nav";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { API_BASE_URL, ADMIN_API_BASE_URL } from "../config/api.config.js";
 
 const Settings = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [newpassword, setNewpassword] = useState("");
+  const [updatingPass, setUpdatingPass] = useState(false);
+
   const [editproduct, setEditproduct] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loadingProducts, setLoadingProducts] = useState(false);
@@ -19,41 +22,41 @@ const Settings = () => {
     try {
       let products = [];
       try {
-        // First try Admin server (all products without limit)
         const res = await axios.get(`${ADMIN_API_BASE_URL}/api/v1/edit/editallproduct`);
-        if (res.data && Array.isArray(res.data.data)) {
+        if (res.data?.data && Array.isArray(res.data.data)) {
           products = res.data.data;
         }
-      } catch (err) {
-        console.log("Admin fallback to backend API", err?.message);
+      } catch {
+        // Fallback to backend API
       }
 
-      // Fallback to backend API with limit=0
       if (!products || products.length === 0) {
-        const res = await axios.get(
-          `${API_BASE_URL}/api/v1/product/productget?limit=0`
-        );
-        products = res.data.products || res.data.data || [];
+        const res = await axios.get(`${API_BASE_URL}/api/v1/product/productget?limit=0`);
+        products = res.data?.products || res.data?.data || [];
       }
 
       setEditproduct(products || []);
     } catch (error) {
-      console.log("Error fetching products:", error);
+      console.error("Error fetching products:", error);
     } finally {
       setLoadingProducts(false);
     }
   }, []);
 
   const handleDeleteProduct = async (id, title) => {
+    if (!window.confirm(`Are you sure you want to delete "${title || "Product"}"?`)) return;
     setDeletingId(id);
     try {
       try {
-        await axios.delete(`${ADMIN_API_BASE_URL}/api/v1/edit/deleteproduct/${id}`);
+        await axios.delete(`${ADMIN_API_BASE_URL}/api/v1/edit/deleteproduct/${id}`, {
+          withCredentials: true,
+        });
       } catch {
-        await axios.delete(`${API_BASE_URL}/api/v1/product/deleteproduct/${id}`);
+        await axios.delete(`${API_BASE_URL}/api/v1/product/deleteproduct/${id}`, {
+          withCredentials: true,
+        });
       }
 
-      // Remove from list immediately in state
       setEditproduct((prev) => prev.filter((item) => item._id !== id));
       toast.success(`"${title || "Product"}" deleted successfully!`);
     } catch (err) {
@@ -64,206 +67,242 @@ const Settings = () => {
     }
   };
 
-  const changepass = useCallback(async (e) => {
-    e.preventDefault();
-    try {
-      // Try Admin update pass endpoint first
-      const res = await axios.post(
-        `${ADMIN_API_BASE_URL}/api/v1/admin/updatepass`,
-        { email, password, newpassword },
-        { withCredentials: true }
-      );
-      toast.success(res.data.message || "Password updated successfully!");
-      setEmail("");
-      setPassword("");
-      setNewpassword("");
-    } catch (adminErr) {
-      // Fallback to store user changepassword if admin port differs
+  const changepass = useCallback(
+    async (e) => {
+      e.preventDefault();
+      setUpdatingPass(true);
       try {
         const res = await axios.post(
-          `${API_BASE_URL}/api/v1/userdata/changepassword`,
-          { email, password, newpassword }
+          `${ADMIN_API_BASE_URL}/api/v1/admin/updatepass`,
+          { email: email.trim(), password, newpassword },
+          { withCredentials: true }
         );
-        toast.success(res.data.message || "Password updated successfully!");
+        toast.success(res.data.message || "Admin credentials updated successfully!");
         setEmail("");
         setPassword("");
         setNewpassword("");
-      } catch (err) {
-        toast.error(
-          adminErr.response?.data?.message ||
-          err.response?.data?.message ||
-          "Failed to update password."
-        );
+      } catch (adminErr) {
+        try {
+          const res = await axios.post(
+            `${API_BASE_URL}/api/v1/userdata/changepassword`,
+            { email: email.trim(), password, newpassword }
+          );
+          toast.success(res.data.message || "Password updated successfully!");
+          setEmail("");
+          setPassword("");
+          setNewpassword("");
+        } catch (err) {
+          toast.error(
+            adminErr.response?.data?.message ||
+              err.response?.data?.message ||
+              "Failed to update password."
+          );
+        }
+      } finally {
+        setUpdatingPass(false);
       }
-    }
-  }, [email, password, newpassword]);
+    },
+    [email, password, newpassword]
+  );
 
   useEffect(() => {
     fetchallproduct();
   }, [fetchallproduct]);
 
-  const filteredProducts = editproduct.filter((product) => {
-    if (!searchQuery.trim()) return true;
-    const q = searchQuery.toLowerCase();
-    return (
-      product.title?.toLowerCase().includes(q) ||
-      product.category?.toLowerCase().includes(q)
-    );
-  });
+  const filteredProducts = editproduct.filter((item) =>
+    item?.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    item?.category?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 flex font-sans">
+    <div className="admin-layout font-sans">
+      <ToastContainer position="top-right" autoClose={3000} theme="colored" />
       <Nav />
 
-      <div className="flex-1 p-6 sm:p-10 overflow-y-auto bg-white">
-        <div className="max-w-3xl mx-auto space-y-8">
-          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Admin Settings</h1>
+      <main className="admin-main">
+        <div className="max-w-6xl mx-auto space-y-8">
+          
+          {/* Header */}
+          <div className="pb-6 border-b border-[var(--admin-card-border)]">
+            <div className="flex items-center gap-2.5">
+              <span className="text-2xl">⚙️</span>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-[var(--admin-text-main)] tracking-tight">
+                Admin Settings & Security
+              </h1>
+            </div>
+            <p className="text-sm text-[var(--admin-text-muted)] mt-1">
+              Configure master credentials and manage inventory shortcuts.
+            </p>
+          </div>
 
-          {/* Change Password Card */}
-          <div className="w-full bg-white border border-slate-200 p-6 rounded-2xl shadow-sm space-y-4">
-            <h2 className="text-lg font-bold text-slate-900">Change Password</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            {/* Password Update Card */}
+            <div className="admin-card p-6 sm:p-7 space-y-5 h-fit">
+              <div className="pb-3 border-b border-[var(--admin-card-border-subtle)]">
+                <h3 className="text-base font-bold text-[var(--admin-text-main)]">
+                  Update Admin Password
+                </h3>
+                <p className="text-xs text-[var(--admin-text-muted)] mt-0.5">
+                  Change administrative account security key
+                </p>
+              </div>
 
-            <form onSubmit={changepass} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <form onSubmit={changepass} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                    Admin Email
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[var(--admin-text-muted)] mb-1.5">
+                    Admin Email <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="email"
+                    placeholder="admin@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="admin@example.com"
+                    className="admin-input"
                     required
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                    Current Password
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[var(--admin-text-muted)] mb-1.5">
+                    Current Password <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="password"
+                    placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
+                    className="admin-input"
                     required
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                    New Password
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[var(--admin-text-muted)] mb-1.5">
+                    New Secure Password <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="password"
+                    placeholder="••••••••"
                     value={newpassword}
                     onChange={(e) => setNewpassword(e.target.value)}
-                    placeholder="••••••••"
+                    className="admin-input"
                     required
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                    minLength={6}
                   />
                 </div>
-              </div>
 
-              <div className="pt-2">
-                <button
-                  type="submit"
-                  className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl shadow-md shadow-indigo-100 transition-all cursor-pointer"
-                >
-                  Update Password
-                </button>
-              </div>
-            </form>
-          </div>
-
-          {/* Product Management Card */}
-          <div className="w-full bg-white border border-slate-200 p-6 rounded-2xl shadow-sm space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-2 border-b border-slate-100">
-              <div>
-                <h2 className="text-lg font-bold text-slate-900">Manage Catalog Products</h2>
-                <p className="text-xs text-slate-500">View and edit any product in the store catalog at any time</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full">
-                  {searchQuery ? `${filteredProducts.length} of ${editproduct.length}` : `${editproduct.length}`} Products
-                </span>
-                <button
-                  type="button"
-                  onClick={fetchallproduct}
-                  title="Reload all products"
-                  className="p-1.5 text-xs text-slate-500 hover:text-indigo-600 hover:bg-slate-100 rounded-lg transition-colors"
-                >
-                  🔄
-                </button>
-              </div>
-            </div>
-
-            {/* Quick Search across all catalog products */}
-            <div className="pt-1">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search products by title or category..."
-                className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
-              />
-            </div>
-
-            {loadingProducts ? (
-              <div className="py-8 text-center text-sm text-slate-500">
-                Loading all products...
-              </div>
-            ) : filteredProducts.length === 0 ? (
-              <div className="py-8 text-center text-sm text-slate-500">
-                {searchQuery ? "No products match your search query." : "No products found."}
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 max-h-[600px] overflow-y-auto pr-1">
-                {filteredProducts.map((product) => (
-                  <div 
-                    key={product._id} 
-                    className="flex items-center gap-4 p-3.5 border border-slate-100 rounded-xl hover:border-indigo-200 hover:bg-slate-50/50 transition-all"
+                <div className="pt-2">
+                  <button
+                    type="submit"
+                    disabled={updatingPass}
+                    className="w-full admin-btn-primary py-2.5 shadow-sm"
                   >
-                    <img 
-                      src={product.productimage?.[0] || "https://placehold.co/100x100"} 
-                      alt={product.title} 
-                      className="w-14 h-14 object-cover rounded-lg bg-slate-100 border border-slate-200"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-sm font-bold text-slate-900 truncate">{product.title}</h3>
-                      <p className="text-xs text-slate-500 font-medium">₹{product.price} • {product.category}</p>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <Link 
-                        to={`/editproduct/${product._id}`}
-                        className="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-600 hover:text-white text-indigo-600 border border-indigo-200 text-xs font-bold rounded-lg transition-colors inline-block whitespace-nowrap"
-                      >
-                        Edit
-                      </Link>
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteProduct(product._id, product.title)}
-                        disabled={deletingId === product._id}
-                        className="px-3 py-1.5 bg-red-50 hover:bg-red-600 hover:text-white text-red-600 border border-red-200 text-xs font-bold rounded-lg transition-colors cursor-pointer inline-flex items-center gap-1 disabled:opacity-50 whitespace-nowrap"
-                        title="Delete product"
-                      >
-                        {deletingId === product._id ? (
-                          <span className="w-3 h-3 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
-                        ) : (
-                          "Delete"
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                    {updatingPass ? "Updating Password..." : "Save New Password"}
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            {/* Quick Catalog Manager */}
+            <div className="lg:col-span-2 admin-card p-6 sm:p-7 space-y-5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[var(--admin-card-border-subtle)]">
+                <div>
+                  <h3 className="text-base font-bold text-[var(--admin-text-main)]">
+                    Catalog Quick Actions
+                  </h3>
+                  <p className="text-xs text-[var(--admin-text-muted)] mt-0.5">
+                    Quickly inspect, edit, or delete items ({editproduct.length} total)
+                  </p>
+                </div>
+
+                <Link
+                  to="/allproduct"
+                  className="admin-btn-secondary text-xs py-1.5 px-3 self-start sm:self-auto"
+                >
+                  Full Catalog View →
+                </Link>
               </div>
-            )}
+
+              {/* Search Bar */}
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[var(--admin-text-muted)]">
+                  🔍
+                </span>
+                <input
+                  type="text"
+                  placeholder="Filter catalog list..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="admin-input pl-9 text-xs"
+                />
+              </div>
+
+              {/* Products List */}
+              {loadingProducts ? (
+                <div className="text-center py-12">
+                  <div className="w-8 h-8 border-3 border-indigo-500/20 border-t-indigo-600 rounded-full animate-spin mx-auto mb-2" />
+                  <p className="text-xs text-[var(--admin-text-muted)]">Loading items...</p>
+                </div>
+              ) : filteredProducts.length === 0 ? (
+                <div className="text-center py-10 bg-[var(--admin-bg-secondary)] rounded-xl border border-[var(--admin-card-border-subtle)]">
+                  <p className="text-xs text-[var(--admin-text-muted)]">No matching products found.</p>
+                </div>
+              ) : (
+                <div className="space-y-2.5 max-h-[500px] overflow-y-auto pr-1">
+                  {filteredProducts.map((product) => {
+                    const img =
+                      product.productimage?.[0] ||
+                      product.image ||
+                      "https://via.placeholder.com/50?text=No+Img";
+
+                    return (
+                      <div
+                        key={product._id}
+                        className="flex items-center justify-between p-3 rounded-xl bg-[var(--admin-bg-secondary)] border border-[var(--admin-card-border-subtle)] hover:border-[var(--admin-accent)] transition-all"
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <img
+                            src={img}
+                            alt={product.title}
+                            className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
+                          />
+                          <div className="min-w-0">
+                            <p className="font-bold text-xs sm:text-sm text-[var(--admin-text-main)] truncate">
+                              {product.title}
+                            </p>
+                            <p className="text-[11px] text-[var(--admin-text-muted)]">
+                              ₹{Number(product.price || 0).toLocaleString("en-IN")} • {product.category || "General"}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 flex-shrink-0 ml-3">
+                          <Link
+                            to={`/editproduct/${product._id}`}
+                            className="admin-btn-secondary text-xs py-1 px-2.5"
+                          >
+                            Edit
+                          </Link>
+                          <button
+                            onClick={() => handleDeleteProduct(product._id, product.title)}
+                            disabled={deletingId === product._id}
+                            className="admin-btn-danger text-xs py-1 px-2.5"
+                          >
+                            {deletingId === product._id ? "..." : "Delete"}
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
           </div>
+
         </div>
-      </div>
+      </main>
     </div>
   );
 };

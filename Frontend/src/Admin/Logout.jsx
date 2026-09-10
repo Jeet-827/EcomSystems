@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { ADMIN_API_BASE_URL } from '../config/api.config.js';
-import Nav from './Nav';
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { ADMIN_API_BASE_URL } from "../config/api.config.js";
+import Nav from "./Nav";
 
 const Logout = () => {
   const navigate = useNavigate();
@@ -30,7 +30,6 @@ const Logout = () => {
   const handleLogout = async () => {
     setLoggingOut(true);
     try {
-      // Call backend logout API to clear admin session cookie
       await axios.post(
         `${ADMIN_API_BASE_URL}/api/v1/admin/adminlogout`,
         {},
@@ -45,47 +44,54 @@ const Logout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 flex font-sans">
-      {/* Sidebar Nav */}
+    <div className="admin-layout font-sans">
       <Nav />
 
-      {/* Main Content */}
-      <div className="flex-1 py-10 px-4 sm:px-6 lg:px-8 overflow-y-auto flex items-center justify-center bg-white">
-        <div className="bg-white border border-slate-200 rounded-3xl p-8 max-w-md w-full text-center space-y-5 shadow-lg">
-          <div className="w-16 h-16 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center text-3xl mx-auto shadow-sm">
+      <main className="admin-main flex items-center justify-center min-h-[85vh]">
+        <div className="admin-card p-8 sm:p-10 max-w-md w-full text-center space-y-6 shadow-xl border border-[var(--admin-card-border)]">
+          <div className="w-16 h-16 rounded-2xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center text-3xl mx-auto shadow-xs">
             🚪
           </div>
-          <div>
-            <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">Log Out Admin</h2>
-            <p className="text-sm text-slate-500 mt-1">
-              Are you sure you want to end your administrative session{adminEmail ? ` for ${adminEmail}` : ""}?
+
+          <div className="space-y-1.5">
+            <h2 className="text-2xl font-black text-[var(--admin-text-main)] tracking-tight">
+              Log Out Admin
+            </h2>
+            <p className="text-xs sm:text-sm text-[var(--admin-text-muted)]">
+              Are you sure you want to terminate your administrative session
+              {adminEmail ? (
+                <span className="font-semibold text-[var(--admin-text-main)]"> ({adminEmail})</span>
+              ) : (
+                ""
+              )}
+              ?
             </p>
           </div>
 
-          <div className="pt-2 flex justify-center gap-3">
+          <div className="pt-2 flex items-center justify-center gap-3">
             <Link
               to="/dashboard"
-              className="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-sm font-bold text-slate-700 transition-all"
+              className="admin-btn-secondary text-xs sm:text-sm py-2.5 px-5"
             >
               Cancel
             </Link>
             <button
               onClick={handleLogout}
               disabled={loggingOut}
-              className="px-6 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-sm font-bold text-white shadow-md shadow-rose-200 transition-all cursor-pointer disabled:opacity-50 flex items-center gap-2"
+              className="admin-btn-danger text-xs sm:text-sm py-2.5 px-6 shadow-md"
             >
               {loggingOut ? (
-                <>
+                <div className="flex items-center gap-2">
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   <span>Logging out...</span>
-                </>
+                </div>
               ) : (
-                <span>Log Out Now</span>
+                <span>Yes, Log Out</span>
               )}
             </button>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 };

@@ -1,15 +1,33 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import axios from "axios";
 import { ADMIN_API_BASE_URL, API_BASE_URL } from "../config/api.config.js";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Nav from "./Nav";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import adminAudio from "./utils/adminAudio.js";
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [updatingId, setUpdatingId] = useState(null);
+  const [soundEnabled, setSoundEnabled] = useState(() => adminAudio.isSoundEnabled());
   const navigate = useNavigate();
+
+  /* Toggle live audio alert chime */
+  const toggleSound = () => {
+    const next = !soundEnabled;
+    adminAudio.setSoundEnabled(next);
+    setSoundEnabled(next);
+    if (next) {
+      adminAudio.playPaidOrderChime();
+      toast.info("Audio notifications enabled");
+    } else {
+      toast.info("Audio notifications muted");
+    }
+  };
 
   /* Fetch all orders from admin backend */
   const fetchOrders = useCallback(async () => {
@@ -25,10 +43,11 @@ const Orders = () => {
           withCredentials: true,
         });
       }
-      setOrders(res.data.orders || res.data.Od || res.data.order || res.data.data || []);
+      const data = res.data.orders || res.data.Od || res.data.order || res.data.data || [];
+      setOrders(data);
     } catch (err) {
       console.error("Failed to fetch orders:", err);
-      toast.error("Failed to load orders");
+      toast.error("Failed to load customer orders");
     } finally {
       setLoading(false);
     }
@@ -38,9 +57,10 @@ const Orders = () => {
     fetchOrders();
   }, [fetchOrders]);
 
-  /* Handle status update (pending / shipping / delivered) */
+  /* Handle status update (pending / shipping / delivered / cancelled) */
   const handleStatusChange = useCallback(async (orderId, newStatus) => {
     try {
+      setUpdatingId(orderId);
       try {
         await axios.put(
           `${ADMIN_API_BASE_URL}/api/v1/order/updatestatus/${orderId}`,
@@ -54,185 +74,383 @@ const Orders = () => {
           { withCredentials: true }
         );
       }
-      toast.success(`Order status updated to ${newStatus}`);
+
+      // Play audio feedback tone
+      if (newStatus.toLowerCase() === "delivered") {
+        adminAudio.playPaidOrderChime();
+      } else {
+        adminAudio.playAlertChime();
+      }
+
+      toast.success(`Order marked as ${newStatus}`);
       setOrders((prev) =>
         prev.map((o) => (o._id === orderId ? { ...o, status: newStatus } : o))
       );
     } catch (err) {
       console.error("Failed to update status:", err);
       toast.error("Failed to update order status");
+    } finally {
+      setUpdatingId(null);
     }
   }, []);
 
+  /* Filtered orders */
+  const filteredOrders = useMemo(() => {
+    return orders.filter((order) => {
+      const q = search.toLowerCase();
+      const orderIdMatch = (order._id || "").toLowerCase().includes(q);
+      const customerMatch =
+        (order.name || "").toLowerCase().includes(q) ||
+        (order.email || "").toLowerCase().includes(q) ||
+        (order.address || "").toLowerCase().includes(q);
+      const statusMatches =
+        statusFilter === "all" ||
+        (order.status || "").toLowerCase() === statusFilter.toLowerCase();
+      return (orderIdMatch || customerMatch) && statusMatches;
+    });
+  }, [orders, search, statusFilter]);
+
+  /* Calculate order revenue metrics */
+  const metrics = useMemo(() => {
+    const total = orders.length;
+    const pending = orders.filter((o) => (o.status || "").toLowerCase() === "pending").length;
+    const delivered = orders.filter((o) => (o.status || "").toLowerCase() === "delivered").length;
+    const totalRevenue = orders.reduce((sum, o) => {
+      const orderTotal = o.productid?.reduce((acc, p) => acc + (parseFloat(p?.price) || 0), 0) || 0;
+      return sum + orderTotal;
+    }, 0);
+    return { total, pending, delivered, totalRevenue };
+  }, [orders]);
+
+  /* Status badge styling helper */
+  const getBadgeClass = (status) => {
+    switch ((status || "").toLowerCase()) {
+      case "pending":
+        return "admin-badge-pending";
+      case "shipping":
+        return "admin-badge-shipping";
+      case "delivered":
+        return "admin-badge-delivered";
+      case "cancelled":
+        return "admin-badge-cancelled";
+      default:
+        return "admin-badge-pending";
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-white text-slate-900 flex flex-col md:flex-row font-sans">
-      <ToastContainer position="top-right" autoClose={3000} theme="light" />
-      {/* Sidebar Nav */}
+    <div className="admin-layout font-sans">
+      <ToastContainer position="top-right" autoClose={3000} theme="colored" />
       <Nav />
 
-      {/* Main Content */}
-      <div className="flex-1 py-10 px-4 sm:px-6 lg:px-8 overflow-y-auto bg-white">
-        <div className="max-w-5xl mx-auto space-y-8">
-          {/* Header */}
-          <div className="flex items-center justify-between pb-6 border-b border-slate-200">
+      <main className="admin-main">
+        <div className="max-w-7xl mx-auto space-y-8">
+          
+          {/* Header & Controls */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[var(--admin-card-border)]">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                Customer Orders
-              </h1>
-              <p className="text-sm text-slate-500 mt-1">
-                Manage and track all customer orders
+              <div className="flex items-center gap-2.5">
+                <span className="text-2xl">🚚</span>
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-[var(--admin-text-main)] tracking-tight">
+                  Customer Orders
+                </h1>
+              </div>
+              <p className="text-sm text-[var(--admin-text-muted)] mt-1">
+                Real-time order processing, status workflows, and fulfillment tracking.
               </p>
             </div>
-            <div>
-              <span className="px-4 py-2 rounded-full text-xs font-bold bg-indigo-50 border border-indigo-200 text-indigo-700">
-                Total Orders: {orders.length}
-              </span>
+
+            <div className="flex items-center gap-3">
+              {/* Sound Notifications Toggle */}
+              <button
+                onClick={toggleSound}
+                className={`admin-sound-toggle ${soundEnabled ? "active" : ""}`}
+                title={soundEnabled ? "Mute audio chimes" : "Enable audio chimes"}
+              >
+                <span>{soundEnabled ? "🔔" : "🔕"}</span>
+                <span>{soundEnabled ? "Sound On" : "Sound Off"}</span>
+              </button>
+
+              <button
+                onClick={fetchOrders}
+                className="admin-btn-secondary text-xs sm:text-sm py-2 px-3.5"
+                title="Refresh Orders"
+              >
+                🔄 Refresh
+              </button>
             </div>
           </div>
 
-          {/* Loading */}
-          {loading && (
-            <div className="flex flex-col items-center justify-center py-16 gap-3">
-              <div className="w-10 h-10 border-4 border-indigo-500/20 border-t-indigo-600 rounded-full animate-spin" />
-              <p className="text-sm font-medium text-slate-500">Loading orders...</p>
+          {/* Metric Stats Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="admin-stat-card">
+              <div className="w-11 h-11 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xl font-bold">
+                📋
+              </div>
+              <div>
+                <p className="text-xs font-bold text-[var(--admin-text-muted)] uppercase tracking-wider">
+                  Total Orders
+                </p>
+                <p className="text-2xl font-black text-[var(--admin-text-main)] mt-0.5">
+                  {metrics.total}
+                </p>
+              </div>
             </div>
-          )}
 
-          {/* Empty State */}
-          {!loading && orders.length === 0 && (
-            <div className="text-center py-16 px-4 bg-slate-50 border border-slate-200 rounded-2xl">
-              <p className="text-base font-bold text-slate-800">No orders found</p>
-              <p className="text-xs text-slate-500 mt-1">Orders placed by customers will appear here.</p>
+            <div className="admin-stat-card">
+              <div className="w-11 h-11 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xl font-bold">
+                ⏳
+              </div>
+              <div>
+                <p className="text-xs font-bold text-[var(--admin-text-muted)] uppercase tracking-wider">
+                  Pending
+                </p>
+                <p className="text-2xl font-black text-amber-600 dark:text-amber-400 mt-0.5">
+                  {metrics.pending}
+                </p>
+              </div>
             </div>
-          )}
 
-          {/* Orders List */}
-          {!loading && orders.length > 0 && (
+            <div className="admin-stat-card">
+              <div className="w-11 h-11 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl font-bold">
+                ✅
+              </div>
+              <div>
+                <p className="text-xs font-bold text-[var(--admin-text-muted)] uppercase tracking-wider">
+                  Delivered
+                </p>
+                <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-0.5">
+                  {metrics.delivered}
+                </p>
+              </div>
+            </div>
+
+            <div className="admin-stat-card">
+              <div className="w-11 h-11 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center text-xl font-bold">
+                💵
+              </div>
+              <div>
+                <p className="text-xs font-bold text-[var(--admin-text-muted)] uppercase tracking-wider">
+                  Gross Sales
+                </p>
+                <p className="text-2xl font-black text-[var(--admin-text-main)] mt-0.5">
+                  ₹{metrics.totalRevenue.toLocaleString("en-IN")}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Search and Status Filters */}
+          <div className="admin-card p-4 space-y-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+              {/* Search */}
+              <div className="relative flex-1">
+                <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[var(--admin-text-muted)]">
+                  🔍
+                </span>
+                <input
+                  type="text"
+                  placeholder="Search by Order ID, customer name, email, city..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="admin-input pl-10"
+                />
+                {search && (
+                  <button
+                    onClick={() => setSearch("")}
+                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-xs text-[var(--admin-text-muted)] hover:text-[var(--admin-text-main)]"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+
+              {/* Status Tabs */}
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 text-xs">
+                {["all", "pending", "shipping", "delivered", "cancelled"].map((status) => (
+                  <button
+                    key={status}
+                    onClick={() => setStatusFilter(status)}
+                    className={`px-3 py-1.5 rounded-xl font-bold capitalize transition-all flex-shrink-0 cursor-pointer ${
+                      statusFilter === status
+                        ? "bg-indigo-600 text-white shadow-xs"
+                        : "bg-[var(--admin-bg-secondary)] text-[var(--admin-text-muted)] hover:text-[var(--admin-text-main)]"
+                    }`}
+                  >
+                    {status}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Orders Listing */}
+          {loading ? (
+            <div className="admin-card p-16 text-center">
+              <div className="w-12 h-12 border-4 border-indigo-500/20 border-t-indigo-600 rounded-full animate-spin mx-auto mb-3" />
+              <p className="text-sm font-semibold text-[var(--admin-text-muted)]">
+                Loading order records...
+              </p>
+            </div>
+          ) : filteredOrders.length === 0 ? (
+            <div className="admin-card p-12 text-center space-y-3">
+              <div className="w-14 h-14 rounded-2xl bg-[var(--admin-bg-secondary)] flex items-center justify-center text-2xl mx-auto">
+                📦
+              </div>
+              <h3 className="text-base font-bold text-[var(--admin-text-main)]">
+                No orders match your criteria
+              </h3>
+              <p className="text-xs text-[var(--admin-text-muted)]">
+                Try resetting search queries or filtering by a different order status.
+              </p>
+            </div>
+          ) : (
             <div className="space-y-4">
-              {orders.map((order) => {
-                const status = order.status?.toLowerCase();
-                const isPaid = order.payment?.toLowerCase() === "paid";
-
-                // Calculate total price of products in this order
-                const totalAmount =
-                  order.productid?.reduce((sum, p) => {
-                    const price = parseFloat(p?.price) || 0;
-                    return sum + price;
-                  }, 0) || 0;
-
-                const statusColor =
-                  status === "pending"
-                    ? "bg-amber-100 text-amber-800 border-amber-300"
-                    : status === "shipping"
-                    ? "bg-blue-100 text-blue-800 border-blue-300"
-                    : status === "delivered"
-                    ? "bg-emerald-100 text-emerald-800 border-emerald-300"
-                    : "bg-slate-100 text-slate-700 border-slate-300";
-
-                const customerName =
-                  order.userid?.name ||
-                  (typeof order.userid === "string"
-                    ? `${order.userid.slice(0, 12)}...`
-                    : "N/A");
+              {filteredOrders.map((order) => {
+                const items = order.productid || [];
+                const orderTotal = items.reduce(
+                  (sum, item) => sum + (parseFloat(item?.price) || 0),
+                  0
+                );
+                const isPaid = (order.payment || "").toLowerCase() === "paid";
 
                 return (
                   <div
                     key={order._id}
-                    onClick={() =>
-                      navigate(`/order/${order._id}`, { state: { order } })
-                    }
-                    className="group bg-white border border-slate-200 hover:border-indigo-300 rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer space-y-4"
+                    className="admin-card p-5 sm:p-6 transition-all hover:border-[var(--admin-accent)] space-y-4"
                   >
-                    {/* Card Top Row */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                      <div className="flex items-center gap-3 flex-wrap">
-                        <span className="font-mono font-bold text-base text-slate-900 group-hover:text-indigo-600 transition-colors">
-                          #{order._id}
+                    {/* Order Top Bar */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[var(--admin-card-border-subtle)]">
+                      <div className="flex flex-wrap items-center gap-2.5">
+                        <span className="font-mono text-xs font-bold text-[var(--admin-text-muted)]">
+                          ID: <span className="text-[var(--admin-text-main)]">{order._id?.slice(-8)}</span>
                         </span>
-                        <span className="text-xs text-slate-500 font-medium">
-                          {new Date(order.createdAt).toLocaleDateString()}
+                        <span className="text-xs text-[var(--admin-text-subtle)]">•</span>
+                        <span className="text-xs text-[var(--admin-text-muted)]">
+                          {order.createdAt
+                            ? new Date(order.createdAt).toLocaleDateString("en-IN", {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })
+                            : "Recent Order"}
+                        </span>
+                        <span className="text-xs text-[var(--admin-text-subtle)]">•</span>
+                        <span
+                          className={`admin-badge ${
+                            isPaid ? "admin-badge-paid" : "admin-badge-cod"
+                          }`}
+                        >
+                          {isPaid ? "💳 Paid Online" : "💵 Cash on Delivery"}
                         </span>
                       </div>
 
-                      {/* Status Select & Payment Pill */}
-                      <div className="flex items-center gap-2">
-                        <select
-                          value={status || "pending"}
-                          disabled={status === "delivered"}
-                          onClick={(e) => e.stopPropagation()} // Prevent clicking the card to navigate
-                          onChange={(e) => handleStatusChange(order._id, e.target.value)}
-                          className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors ${statusColor} ${
-                            status === "delivered" ? "cursor-not-allowed opacity-80" : "cursor-pointer"
-                          }`}
-                        >
-                          <option value="pending" className="bg-white text-amber-700">Pending</option>
-                          <option value="shipping" className="bg-white text-blue-700">Shipping</option>
-                          <option value="delivered" className="bg-white text-emerald-700">Delivered</option>
-                        </select>
-
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border ${
-                            isPaid
-                              ? "bg-emerald-100 text-emerald-800 border-emerald-300"
-                              : "bg-rose-100 text-rose-800 border-rose-300"
-                          }`}
-                        >
-                          {order.payment || "UNPAID"}
+                      {/* Current Status Badge */}
+                      <div className="flex items-center gap-3">
+                        <span className={`admin-badge ${getBadgeClass(order.status)}`}>
+                          ● {order.status || "Pending"}
                         </span>
                       </div>
                     </div>
 
-                    {/* Card Body */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-3 border-t border-slate-100 text-sm">
-                      <div className="space-y-1">
-                        <p className="text-xs text-slate-500">
-                          Customer:{" "}
-                          <span className="text-slate-800 font-semibold">{customerName}</span>
+                    {/* Customer & Product Items Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                      {/* Customer Info */}
+                      <div className="space-y-1 text-xs">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--admin-text-subtle)] block">
+                          Customer & Delivery
+                        </span>
+                        <p className="font-bold text-sm text-[var(--admin-text-main)]">
+                          {order.name || "Guest Customer"}
                         </p>
-                        <p className="text-xs text-slate-500">
-                          Phone:{" "}
-                          <span className="text-slate-800 font-semibold">{order.phonenumber || "N/A"}</span>
+                        <p className="text-[var(--admin-text-muted)] truncate">{order.email}</p>
+                        <p className="text-[var(--admin-text-muted)] mt-1 line-clamp-2">
+                          {order.address ? `📍 ${order.address}` : "Address not provided"}
                         </p>
+                        {order.phone && (
+                          <p className="text-[var(--admin-text-muted)]">📞 {order.phone}</p>
+                        )}
                       </div>
 
-                      {/* Product Thumbnails Preview */}
-                      <div className="flex items-center gap-3">
-                        <span className="text-xs text-slate-500 font-medium">
-                          {order.productid?.length || 0} item(s)
+                      {/* Ordered Products Preview */}
+                      <div className="space-y-1.5 md:col-span-2 text-xs">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--admin-text-subtle)] block">
+                          Items Ordered ({items.length})
                         </span>
-                        <div className="flex -space-x-2 overflow-hidden">
-                          {order.productid?.slice(0, 3).map((prod, idx) => {
-                            const img = Array.isArray(prod?.productimage)
-                              ? prod.productimage[0]
-                              : prod?.productimage;
-                            return img ? (
-                              <img
-                                key={idx}
-                                src={img}
-                                alt={prod?.title || "product"}
-                                className="inline-block h-9 w-9 rounded-full ring-2 ring-white object-cover bg-slate-100"
-                                loading="lazy"
-                              />
-                            ) : (
+                        <div className="flex flex-wrap items-center gap-2">
+                          {items.slice(0, 4).map((p, idx) => {
+                            const img =
+                              p?.productimage?.[0] ||
+                              p?.image ||
+                              "https://via.placeholder.com/50?text=Item";
+                            return (
                               <div
                                 key={idx}
-                                className="inline-block h-9 w-9 rounded-full ring-2 ring-white bg-slate-200 flex items-center justify-center text-[10px] text-slate-500 font-bold"
+                                className="flex items-center gap-2 p-1.5 rounded-xl bg-[var(--admin-bg-secondary)] border border-[var(--admin-card-border-subtle)]"
                               >
-                                📦
+                                <img
+                                  src={img}
+                                  alt={p?.title || "Item"}
+                                  className="w-8 h-8 rounded-lg object-cover"
+                                />
+                                <span className="font-semibold text-[var(--admin-text-main)] max-w-[120px] truncate text-[11px]">
+                                  {p?.title || "Product"}
+                                </span>
+                                <span className="font-bold text-[var(--admin-accent)] text-[11px]">
+                                  ₹{p?.price}
+                                </span>
                               </div>
                             );
                           })}
+                          {items.length > 4 && (
+                            <span className="text-[11px] font-semibold text-[var(--admin-text-muted)]">
+                              +{items.length - 4} more
+                            </span>
+                          )}
                         </div>
                       </div>
+                    </div>
 
-                      {/* Total & Action */}
+                    {/* Order Footer & Actions */}
+                    <div className="pt-3 border-t border-[var(--admin-card-border-subtle)] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-[var(--admin-text-muted)]">
+                          Total Amount:
+                        </span>
+                        <span className="text-lg font-black text-[var(--admin-text-main)]">
+                          ₹{orderTotal.toLocaleString("en-IN")}
+                        </span>
+                      </div>
+
                       <div className="flex items-center gap-3">
-                        <span className="text-base font-extrabold text-emerald-600">
-                          ₹{totalAmount}
-                        </span>
-                        <span className="text-xs font-bold text-indigo-600 group-hover:translate-x-1 transition-transform">
+                        {/* Status Changer Select */}
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-[var(--admin-text-muted)] hidden sm:inline">
+                            Status:
+                          </span>
+                          <select
+                            value={(order.status || "Pending").toLowerCase()}
+                            disabled={updatingId === order._id}
+                            onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                            className="admin-select text-xs py-1.5 pl-3 pr-8 font-bold"
+                          >
+                            <option value="pending">Pending</option>
+                            <option value="shipping">Shipping</option>
+                            <option value="delivered">Delivered</option>
+                            <option value="cancelled">Cancelled</option>
+                          </select>
+                        </div>
+
+                        {/* View Order Detail Button */}
+                        <Link
+                          to={`/order/${order._id}`}
+                          state={{ order }}
+                          className="admin-btn-secondary text-xs py-1.5 px-3"
+                        >
                           View Details →
-                        </span>
+                        </Link>
                       </div>
                     </div>
                   </div>
@@ -240,8 +458,9 @@ const Orders = () => {
               })}
             </div>
           )}
+
         </div>
-      </div>
+      </main>
     </div>
   );
 };

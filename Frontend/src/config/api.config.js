@@ -3,8 +3,8 @@ const isLocalhost =
   typeof window !== "undefined" &&
   (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
 
-const DEFAULT_PROD_BACKEND_URL = "https://ecomsystems-backend.onrender.com";
-const DEFAULT_PROD_ADMIN_URL = "https://ecomsystems-admin.onrender.com";
+const DEFAULT_PROD_BACKEND_URL = "https://ecomm-backend-4wrf.onrender.com";
+const DEFAULT_PROD_ADMIN_URL = "https://ecomm-backend-4wrf.onrender.com";
 
 const getApiUrl = (envUrl, defaultLocalPort, defaultProdUrl) => {
   // If an explicit external URL is set, always use it

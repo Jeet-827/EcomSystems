@@ -3,7 +3,18 @@ import axios from "axios";
 import { useUser } from "../store/Usercontext";
 import { API_BASE_URL } from "../config/api.config.js";
 import Nav from "./Nav";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { Link } from "react-router-dom";
+
+const POPULAR_CATEGORIES = [
+  "Fashion",
+  "Footwear",
+  "Electronics",
+  "Accessories",
+  "Home & Living",
+  "Beauty",
+];
 
 function Dashboard() {
   const [title, setTitle] = useState("");
@@ -16,18 +27,25 @@ function Dashboard() {
   const { token } = useUser();
 
   const handleFileChange = (e) => {
-    const selected = e.target.files[0];
-    setFile(selected);
+    const selected = e.target.files?.[0];
     if (selected) {
+      setFile(selected);
       setPreview(URL.createObjectURL(selected));
     }
+  };
+
+  const handleRemoveFile = () => {
+    setFile(null);
+    setPreview(null);
+    const input = document.getElementById("fileInput");
+    if (input) input.value = "";
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!file) {
-      toast.error("Please select a product image!");
+      toast.error("Please upload a product image!");
       return;
     }
 
@@ -35,32 +53,29 @@ function Dashboard() {
 
     try {
       const formData = new FormData();
-      formData.append("title", title);
+      formData.append("title", title.trim());
       formData.append("price", price);
-      formData.append("category", category);
-      formData.append("description", description);
+      formData.append("category", category.trim());
+      formData.append("description", description.trim());
       formData.append("file", file);
 
       const res = await axios.post(
         `${API_BASE_URL}/api/v1/productgenereted/createproduct`,
         formData,
-        { headers: { Authorization: `Bearer ${token}` } },
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      console.log("Product Created:", res.data);
-      toast.success(res.data.message || "Product created successfully!");
+      toast.success(res.data.message || "Product published successfully!");
 
+      // Reset form
       setTitle("");
       setPrice("");
       setCategory("");
       setDescription("");
-      setFile(null);
-      setPreview(null);
-      const input = document.getElementById("fileInput");
-      if (input) input.value = "";
+      handleRemoveFile();
     } catch (error) {
       const errMsg =
-        error.response?.data?.message || "Failed to create product.";
+        error.response?.data?.message || "Failed to create product. Please try again.";
       toast.error(errMsg);
     } finally {
       setLoading(false);
@@ -68,191 +83,212 @@ function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 flex flex-col md:flex-row font-sans">
-      {/* Sidebar Navigation */}
+    <div className="admin-layout font-sans">
+      <ToastContainer position="top-right" autoClose={3000} theme="colored" />
       <Nav />
 
-      {/* Main Content Area */}
-      <div className="flex-1 p-6 sm:p-10 overflow-y-auto bg-white">
-        <div className="max-w-3xl mx-auto space-y-6">
-          {/* Header */}
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              Add New Product
-            </h1>
-            <p className="text-slate-500 text-sm mt-1">
-              Fill in the details below to add a new product to the store catalog.
-            </p>
+      <main className="admin-main">
+        <div className="max-w-4xl mx-auto space-y-6">
+          
+          {/* Header Section */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[var(--admin-card-border)]">
+            <div>
+              <div className="flex items-center gap-2.5">
+                <span className="text-2xl">➕</span>
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-[var(--admin-text-main)] tracking-tight">
+                  Add New Product
+                </h1>
+              </div>
+              <p className="text-sm text-[var(--admin-text-muted)] mt-1">
+                Upload image assets and configure catalog metadata for the storefront.
+              </p>
+            </div>
+
+            <Link
+              to="/allproduct"
+              className="admin-btn-secondary text-xs sm:text-sm py-2 px-4 self-start sm:self-auto"
+            >
+              <span>📦</span> View All Products
+            </Link>
           </div>
 
           {/* Form Card */}
-          <div className="w-full bg-white border border-slate-200 p-6 sm:p-8 rounded-2xl shadow-sm">
+          <div className="admin-card p-6 sm:p-8 shadow-sm">
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Product Image Upload Area */}
+              
+              {/* Product Image Dropzone */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                  Product Image <span className="text-red-500">*</span>
+                <label className="block text-xs font-bold uppercase tracking-wider text-[var(--admin-text-muted)] mb-2">
+                  Product Image <span className="text-rose-500">*</span>
                 </label>
-                <div className="space-y-2">
-                  <label
-                    htmlFor="fileInput"
-                    className="block w-full h-48 border-2 border-dashed border-indigo-200 hover:border-indigo-400 bg-indigo-50/40 hover:bg-indigo-50/80 rounded-2xl cursor-pointer transition-all relative overflow-hidden group"
-                  >
-                    {preview ? (
-                      <div className="relative w-full h-full flex items-center justify-center bg-slate-900/5">
-                        <img
-                          src={preview}
-                          alt="Product Preview"
-                          className="w-full h-full object-contain p-2 rounded-xl"
-                        />
-                        <div className="absolute bottom-3 right-3 px-3 py-1.5 bg-slate-900/80 hover:bg-slate-900 text-white text-xs font-semibold rounded-lg backdrop-blur-sm flex items-center gap-1.5 shadow-md transition-all">
-                          <span>🔄</span>
-                          <span>Change Image</span>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="w-full h-full flex flex-col items-center justify-center gap-1.5 p-4 text-center">
-                        <div className="text-3xl text-indigo-500 group-hover:scale-110 transition-transform">
-                          📷
-                        </div>
-                        <div className="text-sm font-bold text-slate-700">
-                          Click to upload product image
-                        </div>
-                        <div className="text-xs text-slate-400">
-                          PNG, JPG, WEBP up to 10MB
-                        </div>
-                      </div>
-                    )}
-                  </label>
 
-                  <input
-                    id="fileInput"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    className="hidden"
-                  />
-
-                  {file && (
-                    <div className="flex items-center justify-between px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-600">
-                      <span className="truncate max-w-[80%]">
-                        Selected: <strong className="text-slate-800">{file.name}</strong> ({(file.size / 1024).toFixed(1)} KB)
-                      </span>
+                {preview ? (
+                  <div className="relative w-full h-64 rounded-2xl overflow-hidden border-2 border-[var(--admin-card-border)] bg-[var(--admin-bg-secondary)] flex items-center justify-center group">
+                    <img
+                      src={preview}
+                      alt="Selected preview"
+                      className="w-full h-full object-contain"
+                    />
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                      <label
+                        htmlFor="fileInput"
+                        className="admin-btn-secondary text-xs py-2 px-3.5 cursor-pointer"
+                      >
+                        Change Image
+                      </label>
                       <button
                         type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setFile(null);
-                          setPreview(null);
-                          const input = document.getElementById("fileInput");
-                          if (input) input.value = "";
-                        }}
-                        className="text-red-500 hover:text-red-700 font-bold hover:underline cursor-pointer"
+                        onClick={handleRemoveFile}
+                        className="admin-btn-danger text-xs py-2 px-3.5"
                       >
-                        ✕ Remove
+                        Remove
                       </button>
                     </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Title & Price Row */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                    Product Title <span className="text-red-500">*</span>
+                  </div>
+                ) : (
+                  <label
+                    htmlFor="fileInput"
+                    className="flex flex-col items-center justify-center w-full h-52 border-2 border-dashed border-indigo-500/30 hover:border-indigo-500 bg-indigo-500/5 hover:bg-indigo-500/10 rounded-2xl cursor-pointer transition-all relative group text-center p-6"
+                  >
+                    <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+                      📸
+                    </div>
+                    <p className="text-sm font-bold text-[var(--admin-text-main)]">
+                      Click to upload or drag & drop product image
+                    </p>
+                    <p className="text-xs text-[var(--admin-text-muted)] mt-1">
+                      PNG, JPG, WEBP up to 10MB (Uploaded to ImageKit CDN)
+                    </p>
                   </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Wireless Noise-Cancelling Headphones"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    required
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-slate-900"
-                  />
-                </div>
+                )}
 
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                    Price (₹) <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    placeholder="e.g. 2499"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    required
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-slate-900"
-                  />
-                </div>
-              </div>
-
-              {/* Category */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                  Category <span className="text-red-500">*</span>
-                </label>
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  required
-                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-slate-900 cursor-pointer"
-                >
-                  <option value="" disabled>
-                    Select a category
-                  </option>
-                  <option value="Electronics">Electronics</option>
-                  <option value="Clothing">Clothing</option>
-                  <option value="Footwear">Footwear</option>
-                  <option value="Home & Kitchen">Home & Kitchen</option>
-                  <option value="Beauty & Personal Care">
-                    Beauty & Personal Care
-                  </option>
-                  <option value="Sports & Fitness">Sports & Fitness</option>
-                  <option value="Books">Books</option>
-                  <option value="Accessories">Accessories</option>
-                </select>
-              </div>
-
-              {/* Description */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                  Description <span className="text-red-500">*</span>
-                </label>
-                <textarea
-                  placeholder="Describe key features, specs, and highlights of the product..."
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  rows="4"
-                  required
-                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-slate-900 resize-none"
+                <input
+                  id="fileInput"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="hidden"
                 />
               </div>
 
-              {/* Submit Button */}
-              <div className="pt-2">
+              {/* Title Input */}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-[var(--admin-text-muted)] mb-2">
+                  Product Title <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Classic Vintage Denim Jacket"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="admin-input font-medium"
+                  required
+                />
+              </div>
+
+              {/* Price & Category Fields */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[var(--admin-text-muted)] mb-2">
+                    Price in INR (₹) <span className="text-rose-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[var(--admin-text-muted)] font-bold">
+                      ₹
+                    </span>
+                    <input
+                      type="number"
+                      placeholder="999"
+                      value={price}
+                      onChange={(e) => setPrice(e.target.value)}
+                      className="admin-input pl-8 font-black"
+                      min="1"
+                      step="0.01"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[var(--admin-text-muted)] mb-2">
+                    Category <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Fashion, Electronics"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="admin-input font-medium"
+                    required
+                  />
+                  {/* Category Suggestion Pills */}
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {POPULAR_CATEGORIES.map((cat) => (
+                      <button
+                        key={cat}
+                        type="button"
+                        onClick={() => setCategory(cat)}
+                        className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[var(--admin-bg-secondary)] text-[var(--admin-text-muted)] hover:text-[var(--admin-accent)] hover:border-[var(--admin-accent)] border border-[var(--admin-card-border)] transition-colors cursor-pointer"
+                      >
+                        +{cat}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Description Field */}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-[var(--admin-text-muted)] mb-2">
+                  Product Description <span className="text-rose-500">*</span>
+                </label>
+                <textarea
+                  rows={4}
+                  placeholder="Provide detailed material information, sizing, fit, and key product features..."
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="admin-input"
+                  required
+                />
+              </div>
+
+              {/* Submit Buttons */}
+              <div className="pt-4 border-t border-[var(--admin-card-border-subtle)] flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTitle("");
+                    setPrice("");
+                    setCategory("");
+                    setDescription("");
+                    handleRemoveFile();
+                  }}
+                  className="admin-btn-secondary text-xs sm:text-sm py-2.5 px-4"
+                >
+                  Reset Form
+                </button>
+
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full sm:w-auto px-8 py-3 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white text-sm font-bold rounded-xl shadow-md shadow-indigo-100 transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="admin-btn-primary text-xs sm:text-sm py-2.5 px-6 shadow-md"
                 >
                   {loading ? (
-                    <>
-                      <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      <span>Creating Product...</span>
-                    </>
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span>Uploading & Saving...</span>
+                    </div>
                   ) : (
-                    <>
-                      <span>➕</span>
-                      <span>Create Product</span>
-                    </>
+                    <span>🚀 Publish Product</span>
                   )}
                 </button>
               </div>
+
             </form>
           </div>
+
         </div>
-      </div>
+      </main>
     </div>
   );
 }
