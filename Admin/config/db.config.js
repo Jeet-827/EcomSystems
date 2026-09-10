@@ -1,31 +1,31 @@
 import mongoose from "mongoose";
 
+let isConnected = false;
+
 const DBConnect = async () => {
   try {
+    if (isConnected || mongoose.connection.readyState === 1) {
+      return;
+    }
+
+    if (!process.env.MONGO_URL) {
+      console.error("❌ MONGO_URL is not defined in environment variables");
+      return;
+    }
+
     const options = {
       maxPoolSize: 10,
       minPoolSize: 0,
-      serverSelectionTimeoutMS: 10000,
+      serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
       family: 4,
     };
 
-    if (!process.env.MONGO_URL) {
-      throw new Error("MONGO_URL is not defined");
-    }
-
-    if (mongoose.connection.readyState === 1) {
-      console.log(" MongoDB already connected");
-      return;
-    }
-
     await mongoose.connect(process.env.MONGO_URL, options);
-
+    isConnected = true;
     console.log("Admin MongoDB Connected");
   } catch (error) {
-    console.error(" MongoDB Connection Error:", error.message);
-
-    throw error;
+    console.error("❌ Admin MongoDB Connection Error:", error.message);
   }
 };
 
