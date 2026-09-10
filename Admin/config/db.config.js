@@ -9,7 +9,7 @@ const DBConnect = async () => {
     }
 
     if (!process.env.MONGO_URL) {
-      console.error("❌ MONGO_URL is not defined in environment variables");
+
       return;
     }
 
@@ -25,7 +25,7 @@ const DBConnect = async () => {
     isConnected = true;
     console.log("Admin MongoDB Connected");
   } catch (error) {
-    console.error("❌ Admin MongoDB Connection Error:", error.message);
+
   }
 };
 

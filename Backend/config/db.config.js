@@ -9,7 +9,7 @@ const DBConnect = async () => {
     }
 
     if (!process.env.MONGO_URL) {
-      console.error("❌ MONGO_URL environment variable is missing!");
+
       return;
     }
 
@@ -25,7 +25,7 @@ const DBConnect = async () => {
     isConnected = true;
     console.log("✅ MongoDB Connected with optimized connection pool");
   } catch (error) {
-    console.error("❌ MongoDB Connection Error:", error.message);
+
   }
 };
 

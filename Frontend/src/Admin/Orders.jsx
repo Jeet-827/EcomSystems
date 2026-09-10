@@ -65,7 +65,7 @@ const Orders = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 flex font-sans">
+    <div className="min-h-screen bg-white text-slate-900 flex flex-col md:flex-row font-sans">
       <ToastContainer position="top-right" autoClose={3000} theme="light" />
       {/* Sidebar Nav */}
       <Nav />

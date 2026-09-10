@@ -38,7 +38,7 @@ const Customersmanage = () => {
   }, [getalluser]);
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 flex font-sans">
+    <div className="min-h-screen bg-white text-slate-900 flex flex-col md:flex-row font-sans">
       <Nav />
 
       <div className="flex-1 p-6 sm:p-8 overflow-y-auto bg-white">
