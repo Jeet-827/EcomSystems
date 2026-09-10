@@ -17,5 +17,8 @@ const getApiUrl = (envUrl, defaultLocalPort) => {
 };
 
 export const API_BASE_URL = getApiUrl(import.meta.env.VITE_API_URL, 5000);
-// Admin server runs on port 8000 (separate from Backend port 5000)
-export const ADMIN_API_BASE_URL = getApiUrl(import.meta.env.VITE_ADMIN_API_URL, 8000);
+
+// Admin server URL — set to production murex URL with localhost fallback removed
+export const ADMIN_API_BASE_URL = (
+  import.meta.env.VITE_ADMIN_API_URL || "https://e-commerce-system-murex.vercel.app"
+).trim().replace(/\/+$/, "");
