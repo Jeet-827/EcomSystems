@@ -18,8 +18,17 @@ const Nav = ({ sidebarOpen = false }) => {
           className={`db-nav-item ${path === "/dashboard" ? "active" : ""}`}
           style={{ textDecoration: "none" }}
         >
-          <span className="db-nav-icon">📦</span>
+          <span className="db-nav-icon">➕</span>
           <span>Add Product</span>
+        </Link>
+
+        <Link
+          to="/allproduct"
+          className={`db-nav-item ${path === "/allproduct" ? "active" : ""}`}
+          style={{ textDecoration: "none" }}
+        >
+          <span className="db-nav-icon">📦</span>
+          <span>Manage Products</span>
         </Link>
 
         <Link
