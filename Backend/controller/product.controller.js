@@ -65,20 +65,41 @@ export const GetAllProduct = async (req, res) => {
 export const CreateProduct = async (req, res) => {
   try {
     const { title, price, category, description } = req.body;
-    const image = req.file;
+    let imageUrls = [];
 
-    if (!image) {
-      return res.status(400).json({ message: "Image is required" });
+    const filesToUpload = req.files || (req.file ? [req.file] : []);
+
+    if (filesToUpload.length > 0) {
+      for (const item of filesToUpload) {
+        try {
+          const uploadimage = await imagekit.upload({
+            file: item.buffer,
+            fileName: item.originalname || "product.jpg",
+            folder: "products",
+          });
+          if (uploadimage?.url) {
+            imageUrls.push(uploadimage.url);
+          }
+        } catch (uploadErr) {
+          console.error("ImageKit upload error:", uploadErr.message);
+          const base64 = `data:${item.mimetype};base64,${item.buffer.toString("base64")}`;
+          imageUrls.push(base64);
+        }
+      }
     }
 
-    const uploadimage = await imagekit.upload({
-      file: image.buffer,
-      fileName: image.originalname,
-      folder: "products",
-    });
+    if (imageUrls.length === 0 && req.body.productimage) {
+      imageUrls = Array.isArray(req.body.productimage)
+        ? req.body.productimage
+        : [req.body.productimage];
+    }
+
+    if (imageUrls.length === 0) {
+      return res.status(400).json({ message: "At least one product image is required" });
+    }
 
     const ProductData = await Product.create({
-      productimage: uploadimage.url,
+      productimage: imageUrls,
       title,
       price,
       category,
@@ -87,7 +108,7 @@ export const CreateProduct = async (req, res) => {
 
     invalidateCache();
 
-    res.status(201).json({ message: "Product Created", ProductData });
+    res.status(201).json({ message: "Product Created successfully", ProductData });
   } catch (error) {
     console.error("CreateProduct:", error.message);
     res.status(500).json({ message: error.message });

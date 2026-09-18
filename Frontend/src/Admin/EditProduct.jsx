@@ -116,7 +116,6 @@ function EditProduct() {
 
   return (
     <div className="admin-layout font-sans">
-      <ToastContainer position="top-right" autoClose={3000} theme="colored" />
       <Nav />
 
       <main className="admin-main">
@@ -147,7 +146,7 @@ function EditProduct() {
 
           {loading ? (
             <div className="admin-card p-16 text-center">
-              <div className="w-10 h-10 border-4 border-indigo-500/20 border-t-indigo-600 rounded-full animate-spin mx-auto mb-3" />
+              <div className="w-10 h-10 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin mx-auto mb-3" />
               <p className="text-sm font-semibold text-[var(--admin-text-muted)]">
                 Loading product data...
               </p>

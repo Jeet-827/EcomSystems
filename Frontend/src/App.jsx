@@ -34,10 +34,10 @@ const EditProduct     = lazy(() => import("./Admin/EditProduct"));
 /* ── Full-screen suspense fallback ── */
 function PageLoader() {
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center">
+    <div className="min-h-screen bg-[#121212] flex items-center justify-center">
       <div className="flex flex-col items-center gap-4">
-        <div className="w-12 h-12 border-4 border-indigo-500/30 border-t-indigo-600 rounded-full animate-spin" />
-        <p className="text-slate-600 text-sm font-medium tracking-wide">Loading...</p>
+        <div className="w-12 h-12 border-4 border-emerald-500/20 border-t-[#10b981] rounded-full animate-spin" />
+        <p className="text-zinc-400 text-sm font-medium tracking-wide font-['Outfit']">Loading...</p>
       </div>
     </div>
   );
@@ -82,7 +82,29 @@ function App() {
 
   return (
     <Suspense fallback={<PageLoader />}>
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} theme="colored" />
+      <ToastContainer
+        position="top-right"
+        autoClose={1500}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnHover={false}
+        pauseOnFocusLoss={false}
+        draggable
+        theme="dark"
+        toastStyle={{
+          background: '#1e1e1e',
+          border: '1px solid rgba(255,255,255,0.12)',
+          color: '#fff',
+          fontFamily: "'Outfit', sans-serif",
+          cursor: 'pointer',
+          borderRadius: '14px',
+          fontSize: '13px',
+          boxShadow: '0 10px 25px -5px rgba(0,0,0,0.5)',
+          margin: '8px 12px'
+        }}
+        progressStyle={{ background: '#10b981' }}
+      />
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/home" element={<Home />} />

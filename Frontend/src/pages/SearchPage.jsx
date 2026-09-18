@@ -29,12 +29,12 @@ const SearchCard = memo(({ elem, onAddToCart, onProductClick }) => {
   return (
     <div
       onClick={() => onProductClick(elem._id)}
-      className="group bg-white border border-slate-200 rounded-xl sm:rounded-2xl overflow-hidden hover:-translate-y-1.5 hover:shadow-xl hover:border-indigo-300 transition-all duration-300 flex flex-col justify-between cursor-pointer h-full"
+      className="group card-aura-dark overflow-hidden flex flex-col justify-between cursor-pointer h-full border border-white/10 rounded-2xl sm:rounded-[28px] bg-[#1e1e1e] hover:border-emerald-500/50 transition-all duration-300 shadow-xl"
     >
-      <div className="relative w-full h-36 sm:h-52 bg-slate-100 overflow-hidden flex-shrink-0">
+      <div className="relative w-full h-40 sm:h-56 bg-[#141414] overflow-hidden flex-shrink-0 flex items-center justify-center p-3.5 sm:p-5 rounded-t-2xl sm:rounded-t-[28px]">
         {imgSrc ? (
           <img
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            className="w-full h-full object-contain group-hover:scale-108 transition-transform duration-500 drop-shadow-md"
             src={imgSrc}
             alt={elem.title}
             loading="lazy"
@@ -47,45 +47,51 @@ const SearchCard = memo(({ elem, onAddToCart, onProductClick }) => {
           />
         ) : null}
         <div
-          className="w-full h-full flex items-center justify-center text-3xl sm:text-5xl bg-slate-100"
+          className="w-full h-full flex items-center justify-center text-3xl sm:text-5xl bg-[#141414]"
           style={{ display: imgSrc ? "none" : "flex" }}
         >
           {icon}
         </div>
-        {elem.category && (
-          <span className="absolute top-2 left-2 sm:top-3 sm:left-3 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider bg-white/90 backdrop-blur-md border border-slate-200 text-indigo-600 shadow-sm pointer-events-none">
-            {elem.category}
+        <div className="absolute top-2 left-2 sm:top-3 sm:left-3 flex items-center gap-1">
+          <span className="badge-bestseller-emerald shadow-md text-[8px] sm:text-[9.5px]">
+            AURA
           </span>
-        )}
+          {elem.category && (
+            <span className="text-[8px] sm:text-[9px] font-extrabold uppercase px-1.5 sm:px-2 py-0.5 rounded-full bg-white/10 text-slate-300 line-clamp-1">
+              {elem.category}
+            </span>
+          )}
+        </div>
       </div>
 
-      <div className="p-3 sm:p-5 flex-1 flex flex-col justify-between gap-2 sm:gap-3">
+      <div className="p-3.5 sm:p-5 flex-1 flex flex-col justify-between gap-2.5 sm:gap-3">
         <div>
           <h2
-            className="text-xs sm:text-base font-bold text-slate-900 mb-1 sm:mb-2 line-clamp-1 group-hover:text-indigo-600 transition-colors"
+            className="text-xs sm:text-sm font-bold text-white mb-1 line-clamp-1 group-hover:text-emerald-400 transition-colors font-['Outfit']"
             title={elem.title}
           >
             {elem.title}
           </h2>
           <p
-            className="text-[11px] sm:text-xs text-slate-500 mb-1 sm:mb-2 line-clamp-2 leading-relaxed"
+            className="text-xs text-zinc-400 mb-2 line-clamp-2 leading-relaxed hidden sm:block"
             title={elem.description}
           >
             {elem.description}
           </p>
         </div>
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 sm:pt-3 border-t border-slate-100 mt-auto">
-          <span className="text-sm sm:text-lg font-extrabold text-slate-900 whitespace-nowrap">
-            ₹{elem.price}
+        <div className="space-y-2 pt-2 border-t border-white/10 mt-auto">
+          <span className="text-sm sm:text-base font-extrabold text-white block font-['Outfit']">
+            ₹{Number(elem.price).toLocaleString()}
           </span>
           <button
             onClick={(e) => {
               e.stopPropagation();
               onAddToCart(elem);
             }}
-            className="w-full sm:w-auto px-2.5 sm:px-4 py-1.5 sm:py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] sm:text-xs font-semibold rounded-lg sm:rounded-xl shadow-sm sm:shadow-md hover:shadow-indigo-200 transition-all duration-200 cursor-pointer whitespace-nowrap flex-shrink-0 text-center justify-center"
+            className="w-full py-2 sm:py-2.5 btn-emerald-lux text-[11px] sm:text-xs font-bold uppercase tracking-wider rounded-xl sm:rounded-2xl transition-all shadow-md cursor-pointer text-center active:scale-95 flex items-center justify-center gap-1"
           >
-            Add to Cart
+            <span>ADD TO BAG</span>
+            <span className="text-xs sm:text-sm">🛍️</span>
           </button>
         </div>
       </div>
@@ -131,7 +137,7 @@ function SearchPage() {
   const handleAddToCart = useCallback(
     async (elem) => {
       if (!token) {
-        alert("Please login to add items to cart!");
+        alert("Please login to add items to bag!");
         navigate("/login");
         return;
       }
@@ -150,7 +156,7 @@ function SearchPage() {
           payload,
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        alert("Item Added to Cart!");
+        alert("Item Added to Bag! 🛍️");
         const cartRes = await axios.get(
           `${API_BASE_URL}/api/v1/cartdata/cartget`,
           { headers: { Authorization: `Bearer ${token}` } }
@@ -167,40 +173,40 @@ function SearchPage() {
   const productList = useMemo(() => products, [products]);
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-[#121212] text-white min-h-screen font-sans">
       <Navbar />
-      <div className="min-h-screen bg-white text-slate-900 font-sans px-4 py-10 md:px-10 max-w-7xl mx-auto">
+      <div className="min-h-screen bg-[#121212] px-4 py-10 md:px-10 max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-10">
-          <h1 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-3 tracking-tight">
-            Search Results
+          <h1 className="text-3xl md:text-5xl font-black text-white mb-3 tracking-wider font-['Outfit'] uppercase">
+            SEARCH RESULTS
           </h1>
-          <p className="text-slate-500 text-sm md:text-base max-w-md mx-auto">
+          <p className="text-zinc-400 text-xs md:text-sm max-w-md mx-auto uppercase tracking-widest">
             {query
               ? `Showing results for "${query}"`
-              : "Enter a search term in the navbar to begin."}
+              : "Enter a search query in the search bar above."}
           </p>
         </div>
 
         {/* Loading */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 gap-4">
-            <div className="w-12 h-12 border-4 border-indigo-500/30 border-t-indigo-600 rounded-full animate-spin" />
-            <span className="text-indigo-600 font-medium tracking-wide">
-              Searching our catalog...
+            <div className="w-12 h-12 border-4 border-white/20 border-t-[#10b981] rounded-full animate-spin" />
+            <span className="text-[#10b981] text-xs uppercase tracking-widest font-bold">
+              Searching luxury collection...
             </span>
           </div>
         ) : (
           <>
             {productList.length === 0 && query ? (
-              <div className="text-center py-20 bg-slate-50 border border-slate-200 rounded-3xl max-w-lg mx-auto shadow-sm">
+              <div className="text-center py-20 bg-[#1e1e1e] border border-white/10 rounded-3xl max-w-lg mx-auto shadow-sm">
                 <div className="text-6xl mb-6 opacity-80">🔍</div>
-                <h3 className="text-xl font-bold text-slate-800 mb-2">
+                <h3 className="text-xl font-bold text-white mb-2 uppercase tracking-wider">
                   No matches found
                 </h3>
-                <p className="text-sm text-slate-500 mb-6 px-8">
-                  We couldn't find any products matching{" "}
-                  <span className="text-indigo-600 font-semibold">"{query}"</span>.
+                <p className="text-xs text-zinc-400 mb-6 px-8">
+                  We couldn't find any luxury products matching{" "}
+                  <span className="text-[#10b981] font-semibold">"{query}"</span>.
                 </p>
               </div>
             ) : null}

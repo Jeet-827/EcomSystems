@@ -39,31 +39,31 @@ function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/40 to-purple-50/30 flex items-center justify-center p-4">
-      {/* Subtle grid background */}
+    <div className="min-h-screen bg-[#121212] text-white flex items-center justify-center p-4">
+      {/* Subtle background glow */}
       <div
-        className="fixed inset-0 pointer-events-none opacity-30"
+        className="fixed inset-0 pointer-events-none opacity-20"
         style={{
-          backgroundImage: "radial-gradient(circle, #6366f1 1px, transparent 1px)",
+          backgroundImage: "radial-gradient(circle, #10b981 1px, transparent 1px)",
           backgroundSize: "40px 40px",
         }}
       />
 
       <div className="relative w-full max-w-sm">
         {/* Card */}
-        <div className="bg-white rounded-3xl shadow-2xl shadow-indigo-100 border border-slate-200/80 p-7 sm:p-8 space-y-6">
+        <div className="bg-[#1e1e1e] rounded-3xl shadow-2xl border border-white/10 p-7 sm:p-8 space-y-6">
           {/* Brand */}
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white flex items-center justify-center font-black text-base shadow-sm">
-              ⚡
+            <div className="w-10 h-10 rounded-2xl bg-[#10b981] text-black flex items-center justify-center font-black text-lg shadow-md font-['Outfit']">
+              A
             </div>
-            <span className="font-black text-slate-900 text-lg tracking-tight">E-System</span>
+            <span className="font-extrabold text-white text-xl tracking-wider font-['Outfit']">AURA</span>
           </div>
 
           {/* Header */}
           <div>
-            <h1 className="text-2xl font-black text-slate-900 tracking-tight">Create account</h1>
-            <p className="text-slate-500 text-sm mt-1">Join E-System today — it's free!</p>
+            <h1 className="text-2xl font-black text-white tracking-tight font-['Outfit']">CREATE ACCOUNT</h1>
+            <p className="text-zinc-400 text-xs mt-1 uppercase tracking-widest">Join AURA luxury membership today</p>
           </div>
 
           {/* Alert */}
@@ -71,8 +71,8 @@ function Register() {
             <div
               className={`flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold border ${
                 message.type === "success"
-                  ? "bg-emerald-50 border-emerald-200 text-emerald-700"
-                  : "bg-rose-50 border-rose-200 text-rose-700"
+                  ? "bg-emerald-950/60 border-emerald-500/40 text-emerald-300"
+                  : "bg-rose-950/60 border-rose-500/40 text-rose-300"
               }`}
             >
               <span>{message.type === "success" ? "✅" : "⚠️"}</span>
@@ -83,15 +83,15 @@ function Register() {
           {/* Form */}
           <form className="space-y-4" onSubmit={handleRegister}>
             <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider" htmlFor="reg-name">
+              <label className="block text-xs font-bold text-zinc-400 uppercase tracking-widest" htmlFor="reg-name">
                 Full Name
               </label>
               <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-base pointer-events-none">👤</span>
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm pointer-events-none text-zinc-400">👤</span>
                 <input
                   id="reg-name"
                   type="text"
-                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white focus:border-indigo-400 transition-all"
+                  className="w-full pl-10 pr-4 py-3 bg-[#121212] border border-white/10 rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#10b981] focus:border-transparent transition-all"
                   placeholder="John Doe"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -102,16 +102,16 @@ function Register() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider" htmlFor="reg-email">
+              <label className="block text-xs font-bold text-zinc-400 uppercase tracking-widest" htmlFor="reg-email">
                 Email
               </label>
               <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-base pointer-events-none">✉️</span>
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm pointer-events-none text-zinc-400">✉️</span>
                 <input
                   id="reg-email"
                   type="email"
-                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white focus:border-indigo-400 transition-all"
-                  placeholder="you@example.com"
+                  className="w-full pl-10 pr-4 py-3 bg-[#121212] border border-white/10 rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#10b981] focus:border-transparent transition-all"
+                  placeholder="you@domain.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -121,16 +121,16 @@ function Register() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider" htmlFor="reg-password">
+              <label className="block text-xs font-bold text-zinc-400 uppercase tracking-widest" htmlFor="reg-password">
                 Password
               </label>
               <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-base pointer-events-none">🔒</span>
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm pointer-events-none text-zinc-400">🔒</span>
                 <input
                   id="reg-password"
                   type="password"
-                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white focus:border-indigo-400 transition-all"
-                  placeholder="Create a strong password"
+                  className="w-full pl-10 pr-4 py-3 bg-[#121212] border border-white/10 rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#10b981] focus:border-transparent transition-all"
+                  placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -142,34 +142,34 @@ function Register() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 px-6 rounded-xl font-bold text-sm text-white bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed shadow-md hover:shadow-lg hover:shadow-indigo-200 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-3.5 px-6 rounded-xl font-bold text-xs uppercase tracking-wider bg-[#10b981] hover:bg-[#059669] text-white active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed shadow-lg transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
             >
               {loading && (
                 <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin inline-block" />
               )}
-              {loading ? "Creating account..." : "Create Account →"}
+              {loading ? "Creating account..." : "CREATE ACCOUNT →"}
             </button>
           </form>
 
           {/* Divider */}
           <div className="flex items-center gap-3">
-            <div className="flex-1 h-px bg-slate-200" />
-            <span className="text-xs text-slate-400 font-semibold">or</span>
-            <div className="flex-1 h-px bg-slate-200" />
+            <div className="flex-1 h-px bg-white/10" />
+            <span className="text-xs text-zinc-500 font-semibold uppercase">or</span>
+            <div className="flex-1 h-px bg-white/10" />
           </div>
 
           {/* Redirect */}
-          <p className="text-center text-xs text-slate-500">
+          <p className="text-center text-xs text-zinc-400">
             Already have an account?{" "}
-            <Link to="/login" className="font-bold text-indigo-600 hover:text-indigo-700 hover:underline transition-colors">
+            <Link to="/login" className="font-bold text-[#10b981] hover:underline transition-colors">
               Sign in
             </Link>
           </p>
         </div>
 
         {/* Back to home */}
-        <p className="text-center mt-4 text-xs text-slate-500">
-          <Link to="/" className="hover:text-indigo-600 transition-colors font-semibold">← Back to Home</Link>
+        <p className="text-center mt-4 text-xs text-zinc-500">
+          <Link to="/" className="hover:text-white transition-colors font-semibold uppercase tracking-wider">← Back to Home</Link>
         </p>
       </div>
     </div>
