@@ -73,68 +73,92 @@ function Cart() {
   }, [cartitem]);
 
   return (
-    <div className="cart-page">
-      <ToastContainer position="top-right" autoClose={3000} />
+    <div className="min-h-screen bg-[#121212] text-white font-sans flex flex-col">
       <Navbar />
 
-      <main className="cart-main">
-        <div className="cart-title-section">
-          <h1 className="cart-title">Your Cart</h1>
-          <p className="cart-subtitle">
-            {cartitem.length === 1 ? "1 item" : `${cartitem.length} items`} in
-            your cart
+      <main className="flex-1 max-w-6xl w-full mx-auto px-4 py-8 md:py-12 mt-16">
+        {/* Header */}
+        <div className="mb-8 text-center sm:text-left">
+          <h1 className="text-3xl sm:text-4xl font-black text-white tracking-widest font-['Outfit'] uppercase">
+            YOUR SHOPPING BAG
+          </h1>
+          <p className="text-zinc-400 text-xs sm:text-sm uppercase tracking-widest mt-1">
+            {cartitem.length === 1 ? "1 item" : `${cartitem.length} items`} in your luxury bag
           </p>
         </div>
 
         {cartitem.length === 0 ? (
-          <div className="cart-empty-card">
-            <span className="cart-empty-icon">🛒</span>
-            <h2 className="cart-empty-title">Your cart is empty</h2>
-            <p className="cart-empty-text">
-              Looks like you haven't added anything to your cart yet.
+          <div className="bg-[#1e1e1e] border border-white/10 rounded-3xl p-12 text-center max-w-md mx-auto space-y-4 shadow-2xl">
+            <div className="text-6xl text-zinc-600">🛍️</div>
+            <h2 className="text-xl font-bold text-white uppercase tracking-wider font-['Outfit']">Your bag is empty</h2>
+            <p className="text-zinc-400 text-xs uppercase tracking-widest">
+              Explore our luxury acoustic and lifestyle collection to fill your bag.
             </p>
-            <a href="/home" className="cart-checkout-btn">
-              Start Shopping
-            </a>
+            <button
+              onClick={() => navigate("/home")}
+              className="px-8 py-3.5 bg-[#10b981] hover:bg-[#059669] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-lg transition-all active:scale-95 cursor-pointer inline-block mt-2"
+            >
+              START SHOPPING
+            </button>
           </div>
         ) : (
-          <div className="cart-layout">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Cart Items */}
-            <div className="cart-items-container">
+            <div className="lg:col-span-2 space-y-4">
               {cartitem.map((item) => {
                 const qty = item.quantity || 1;
                 const itemTotal = (Number(item.productprice) || 0) * qty;
 
                 return (
-                  <div className="cart-item-card" key={item._id}>
-                    <div className="cart-item-img-wrap">
+                  <div
+                    className="bg-[#1e1e1e] border border-white/10 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center gap-4 sm:gap-6 shadow-sm hover:border-[#10b981]/50 transition-all"
+                    key={item._id}
+                  >
+                    <div className="w-24 h-24 sm:w-28 sm:h-28 bg-[#181818] rounded-xl border border-white/10 overflow-hidden shrink-0 flex items-center justify-center p-2">
                       <img
                         src={item.itemimage}
                         alt={item.producttitle}
-                        className="cart-item-img"
+                        className="w-full h-full object-contain"
                         loading="lazy"
                       />
                     </div>
-                    <div className="cart-item-info">
-                      <h3 className="cart-item-title">{item.producttitle}</h3>
-                      <p className="cart-item-desc">{item.productdescription}</p>
 
-                      <div className="cart-item-qty-row">
-                        <span className="cart-item-price">₹{item.productprice}</span>
+                    <div className="flex-1 space-y-2 text-center sm:text-left w-full">
+                      <div className="flex items-start justify-between gap-2">
+                        <h3 className="text-base font-bold text-white line-clamp-1">
+                          {item.producttitle}
+                        </h3>
+                        <button
+                          className="text-zinc-500 hover:text-rose-400 transition-colors text-base p-1 cursor-pointer"
+                          onClick={() => handleRemoveItem(item._id)}
+                          title="Remove Item"
+                        >
+                          🗑️
+                        </button>
+                      </div>
 
-                        {/* Quantity Controls: - Qty + */}
-                        <div className="cart-qty-controls">
+                      <p className="text-xs text-zinc-400 line-clamp-1">
+                        {item.productdescription || "Luxury design piece."}
+                      </p>
+
+                      <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+                        <span className="text-sm font-extrabold text-[#10b981]">
+                          ₹{Number(item.productprice).toLocaleString()}
+                        </span>
+
+                        {/* Quantity Controls */}
+                        <div className="flex items-center gap-3 bg-[#121212] border border-white/10 px-3 py-1 rounded-xl">
                           <button
-                            className="cart-qty-btn"
+                            className="text-white hover:text-[#10b981] disabled:opacity-30 disabled:hover:text-white font-bold text-base px-1 cursor-pointer"
                             onClick={() => handleQuantityChange(item._id, -1)}
                             disabled={qty <= 1}
                             title="Decrease quantity"
                           >
                             −
                           </button>
-                          <span className="cart-qty-val">{qty}</span>
+                          <span className="text-xs font-bold text-white min-w-[20px] text-center">{qty}</span>
                           <button
-                            className="cart-qty-btn"
+                            className="text-white hover:text-[#10b981] font-bold text-base px-1 cursor-pointer"
                             onClick={() => handleQuantityChange(item._id, 1)}
                             title="Increase quantity"
                           >
@@ -143,53 +167,56 @@ function Cart() {
                         </div>
 
                         {/* Calculated Subtotal */}
-                        <span className="cart-item-subtotal">
-                          Total: <span className="cart-item-subtotal-val">₹{itemTotal}</span>
+                        <span className="text-xs text-zinc-300 font-semibold">
+                          Total: <span className="font-extrabold text-white text-sm">₹{itemTotal.toLocaleString()}</span>
                         </span>
                       </div>
-                    </div>
-                    <div className="cart-item-actions">
-                      <button
-                        className="cart-remove-btn"
-                        onClick={() => handleRemoveItem(item._id)}
-                        title="Remove Item"
-                      >
-                        🗑️
-                      </button>
                     </div>
                   </div>
                 );
               })}
             </div>
 
-            {/* Summary */}
-            <div className="cart-summary-card">
-              <h2 className="cart-summary-title">Order Summary</h2>
-              <div className="cart-summary-row">
-                <span>Subtotal</span>
-                <span>₹{subtotal}</span>
+            {/* Order Summary Card */}
+            <div className="lg:col-span-1">
+              <div className="bg-[#1e1e1e] border border-white/10 rounded-3xl p-6 space-y-6 shadow-2xl sticky top-24">
+                <h2 className="text-lg font-black text-white uppercase tracking-widest font-['Outfit']">ORDER SUMMARY</h2>
+
+                <div className="space-y-3 text-xs uppercase tracking-wider border-b border-white/10 pb-4">
+                  <div className="flex justify-between text-zinc-400">
+                    <span>Subtotal</span>
+                    <span className="font-bold text-white">₹{subtotal.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between text-zinc-400">
+                    <span>Shipping</span>
+                    <span className="font-bold text-[#10b981]">
+                      {shipping === 0 ? "FREE EXPRESS" : `₹${shipping}`}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-center text-sm font-black text-white uppercase tracking-wider">
+                  <span>Total Amount</span>
+                  <span className="text-xl text-[#10b981]">₹{total.toLocaleString()}</span>
+                </div>
+
+                <button
+                  className="w-full py-4 bg-[#10b981] hover:bg-[#059669] active:scale-95 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-xl transition-all cursor-pointer flex items-center justify-center gap-2"
+                  onClick={() => navigate("/checkout")}
+                >
+                  <span>⚡</span>
+                  <span>PROCEED TO CHECKOUT</span>
+                </button>
+
+                <div className="text-center">
+                  <button
+                    onClick={() => navigate("/home")}
+                    className="text-xs text-zinc-400 hover:text-white uppercase tracking-widest font-semibold transition-colors cursor-pointer"
+                  >
+                    ← Continue Shopping
+                  </button>
+                </div>
               </div>
-              <div className="cart-summary-row">
-                <span>Shipping</span>
-                <span>{shipping === 0 ? "Free" : `₹${shipping}`}</span>
-              </div>
-              <div className="cart-summary-total-row">
-                <span>Total</span>
-                <span className="cart-summary-total-price">₹{total}</span>
-              </div>
-              <button
-                className="cart-checkout-btn"
-                onClick={() => navigate("/checkout")}
-              >
-                Proceed to Checkout
-              </button>
-              <span
-                onClick={() => navigate("/home")}
-                className="cart-continue-link"
-                style={{ cursor: "pointer" }}
-              >
-                Continue Shopping
-              </span>
             </div>
           </div>
         )}

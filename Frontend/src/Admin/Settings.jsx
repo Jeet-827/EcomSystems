@@ -5,11 +5,14 @@ import Nav from "./Nav";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { API_BASE_URL, ADMIN_API_BASE_URL } from "../config/api.config.js";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 const Settings = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [newpassword, setNewpassword] = useState("");
+  const [showCurrentPass, setShowCurrentPass] = useState(false);
+  const [showNewPass, setShowNewPass] = useState(false);
   const [updatingPass, setUpdatingPass] = useState(false);
 
   const [editproduct, setEditproduct] = useState([]);
@@ -116,87 +119,106 @@ const Settings = () => {
 
   return (
     <div className="admin-layout font-sans">
-      <ToastContainer position="top-right" autoClose={3000} theme="colored" />
       <Nav />
 
       <main className="admin-main">
-        <div className="max-w-6xl mx-auto space-y-8">
+        <div className="max-w-6xl mx-auto space-y-6 lg:space-y-8">
           
-          {/* Header */}
-          <div className="pb-6 border-b border-[var(--admin-card-border)]">
-            <div className="flex items-center gap-2.5">
-              <span className="text-2xl">⚙️</span>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-[var(--admin-text-main)] tracking-tight">
+          {/* Header (Matching Screenshot) */}
+          <div className="pb-5 border-b border-[var(--admin-card-border)]">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl sm:text-3xl">⚙️</span>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-[var(--admin-text-main)] tracking-tight font-['Outfit']">
                 Admin Settings & Security
               </h1>
             </div>
-            <p className="text-sm text-[var(--admin-text-muted)] mt-1">
+            <p className="text-xs sm:text-sm text-[var(--admin-text-muted)] mt-1.5 font-medium">
               Configure master credentials and manage inventory shortcuts.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
             
-            {/* Password Update Card */}
-            <div className="admin-card p-6 sm:p-7 space-y-5 h-fit">
-              <div className="pb-3 border-b border-[var(--admin-card-border-subtle)]">
-                <h3 className="text-base font-bold text-[var(--admin-text-main)]">
+            {/* ── Left Card: Update Admin Password (col-span-5) ── */}
+            <div className="lg:col-span-5 admin-card p-6 sm:p-7 space-y-6 rounded-2xl sm:rounded-3xl shadow-md border border-[var(--admin-card-border)]">
+              <div>
+                <h3 className="text-lg font-bold text-[var(--admin-text-main)] tracking-tight font-['Outfit']">
                   Update Admin Password
                 </h3>
-                <p className="text-xs text-[var(--admin-text-muted)] mt-0.5">
+                <p className="text-xs text-[var(--admin-text-muted)] mt-1">
                   Change administrative account security key
                 </p>
               </div>
 
               <form onSubmit={changepass} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[var(--admin-text-muted)] mb-1.5">
-                    Admin Email <span className="text-rose-500">*</span>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-[var(--admin-text-muted)] mb-1.5">
+                    ADMIN EMAIL <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="email"
                     placeholder="admin@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="admin-input"
+                    className="admin-input text-sm py-2.5 px-3.5"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[var(--admin-text-muted)] mb-1.5">
-                    Current Password <span className="text-rose-500">*</span>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-[var(--admin-text-muted)] mb-1.5">
+                    CURRENT PASSWORD <span className="text-rose-500">*</span>
                   </label>
-                  <input
-                    type="password"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="admin-input"
-                    required
-                  />
+                  <div className="relative">
+                    <input
+                      type={showCurrentPass ? "text" : "password"}
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="admin-input text-sm py-2.5 px-3.5 pr-10"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowCurrentPass(!showCurrentPass)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--admin-text-muted)] hover:text-[var(--admin-text-main)] transition-colors cursor-pointer"
+                      title={showCurrentPass ? "Hide password" : "Show password"}
+                    >
+                      {showCurrentPass ? <FiEyeOff size={16} /> : <FiEye size={16} />}
+                    </button>
+                  </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[var(--admin-text-muted)] mb-1.5">
-                    New Secure Password <span className="text-rose-500">*</span>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-[var(--admin-text-muted)] mb-1.5">
+                    NEW SECURE PASSWORD <span className="text-rose-500">*</span>
                   </label>
-                  <input
-                    type="password"
-                    placeholder="••••••••"
-                    value={newpassword}
-                    onChange={(e) => setNewpassword(e.target.value)}
-                    className="admin-input"
-                    required
-                    minLength={6}
-                  />
+                  <div className="relative">
+                    <input
+                      type={showNewPass ? "text" : "password"}
+                      placeholder="••••••••"
+                      value={newpassword}
+                      onChange={(e) => setNewpassword(e.target.value)}
+                      className="admin-input text-sm py-2.5 px-3.5 pr-10"
+                      required
+                      minLength={6}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowNewPass(!showNewPass)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--admin-text-muted)] hover:text-[var(--admin-text-main)] transition-colors cursor-pointer"
+                      title={showNewPass ? "Hide password" : "Show password"}
+                    >
+                      {showNewPass ? <FiEyeOff size={16} /> : <FiEye size={16} />}
+                    </button>
+                  </div>
                 </div>
 
                 <div className="pt-2">
                   <button
                     type="submit"
                     disabled={updatingPass}
-                    className="w-full admin-btn-primary py-2.5 shadow-sm"
+                    className="w-full admin-primary-btn py-3 text-sm font-bold tracking-wide"
                   >
                     {updatingPass ? "Updating Password..." : "Save New Password"}
                   </button>
@@ -204,29 +226,29 @@ const Settings = () => {
               </form>
             </div>
 
-            {/* Quick Catalog Manager */}
-            <div className="lg:col-span-2 admin-card p-6 sm:p-7 space-y-5">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[var(--admin-card-border-subtle)]">
+            {/* ── Right Card: Catalog Quick Actions (col-span-7) ── */}
+            <div className="lg:col-span-7 admin-card p-6 sm:p-7 space-y-5 rounded-2xl sm:rounded-3xl shadow-md border border-[var(--admin-card-border)]">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2">
                 <div>
-                  <h3 className="text-base font-bold text-[var(--admin-text-main)]">
+                  <h3 className="text-lg font-bold text-[var(--admin-text-main)] tracking-tight font-['Outfit']">
                     Catalog Quick Actions
                   </h3>
-                  <p className="text-xs text-[var(--admin-text-muted)] mt-0.5">
+                  <p className="text-xs text-[var(--admin-text-muted)] mt-1">
                     Quickly inspect, edit, or delete items ({editproduct.length} total)
                   </p>
                 </div>
 
                 <Link
                   to="/allproduct"
-                  className="admin-btn-secondary text-xs py-1.5 px-3 self-start sm:self-auto"
+                  className="admin-catalog-outline-btn self-start sm:self-auto"
                 >
                   Full Catalog View →
                 </Link>
               </div>
 
-              {/* Search Bar */}
+              {/* Search Bar (Matching Screenshot) */}
               <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[var(--admin-text-muted)]">
+                <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-base text-[var(--admin-text-muted)]">
                   🔍
                 </span>
                 <input
@@ -234,44 +256,48 @@ const Settings = () => {
                   placeholder="Filter catalog list..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="admin-input pl-9 text-xs"
+                  className="admin-input pl-10 text-xs sm:text-sm py-2.5"
                 />
               </div>
 
               {/* Products List */}
               {loadingProducts ? (
-                <div className="text-center py-12">
-                  <div className="w-8 h-8 border-3 border-indigo-500/20 border-t-indigo-600 rounded-full animate-spin mx-auto mb-2" />
-                  <p className="text-xs text-[var(--admin-text-muted)]">Loading items...</p>
+                <div className="text-center py-16">
+                  <div className="w-8 h-8 border-3 border-emerald-500/20 border-t-[#10b981] rounded-full animate-spin mx-auto mb-3" />
+                  <p className="text-xs text-[var(--admin-text-muted)] font-medium">Loading items...</p>
                 </div>
               ) : filteredProducts.length === 0 ? (
-                <div className="text-center py-10 bg-[var(--admin-bg-secondary)] rounded-xl border border-[var(--admin-card-border-subtle)]">
-                  <p className="text-xs text-[var(--admin-text-muted)]">No matching products found.</p>
+                <div className="text-center py-12 bg-[var(--admin-bg-secondary)] rounded-2xl border border-[var(--admin-card-border-subtle)]">
+                  <p className="text-sm font-semibold text-[var(--admin-text-muted)]">No matching products found.</p>
+                  <p className="text-xs text-[var(--admin-text-subtle)] mt-1">Try refining your search keyword.</p>
                 </div>
               ) : (
-                <div className="space-y-2.5 max-h-[500px] overflow-y-auto pr-1">
+                <div className="space-y-3 max-h-[460px] overflow-y-auto pr-1">
                   {filteredProducts.map((product) => {
                     const img =
                       product.productimage?.[0] ||
                       product.image ||
-                      "https://via.placeholder.com/50?text=No+Img";
+                      "https://via.placeholder.com/60?text=Item";
 
                     return (
                       <div
                         key={product._id}
-                        className="flex items-center justify-between p-3 rounded-xl bg-[var(--admin-bg-secondary)] border border-[var(--admin-card-border-subtle)] hover:border-[var(--admin-accent)] transition-all"
+                        className="admin-product-row flex-wrap sm:flex-nowrap gap-3"
                       >
-                        <div className="flex items-center gap-3 min-w-0">
+                        <div className="flex items-center gap-3.5 min-w-0">
                           <img
                             src={img}
                             alt={product.title}
-                            className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
+                            className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl object-cover flex-shrink-0 border border-[var(--admin-card-border)] bg-[var(--admin-bg)]"
+                            onError={(e) => {
+                              e.currentTarget.src = "https://via.placeholder.com/60?text=Item";
+                            }}
                           />
                           <div className="min-w-0">
-                            <p className="font-bold text-xs sm:text-sm text-[var(--admin-text-main)] truncate">
+                            <p className="font-bold text-xs sm:text-sm text-[var(--admin-text-main)] truncate font-['Outfit']">
                               {product.title}
                             </p>
-                            <p className="text-[11px] text-[var(--admin-text-muted)]">
+                            <p className="text-[11px] sm:text-xs text-[var(--admin-text-muted)] mt-0.5 truncate">
                               ₹{Number(product.price || 0).toLocaleString("en-IN")} • {product.category || "General"}
                             </p>
                           </div>
@@ -280,14 +306,14 @@ const Settings = () => {
                         <div className="flex items-center gap-2 flex-shrink-0 ml-3">
                           <Link
                             to={`/editproduct/${product._id}`}
-                            className="admin-btn-secondary text-xs py-1 px-2.5"
+                            className="admin-edit-pill"
                           >
                             Edit
                           </Link>
                           <button
                             onClick={() => handleDeleteProduct(product._id, product.title)}
                             disabled={deletingId === product._id}
-                            className="admin-btn-danger text-xs py-1 px-2.5"
+                            className="admin-delete-pill"
                           >
                             {deletingId === product._id ? "..." : "Delete"}
                           </button>
@@ -308,3 +334,4 @@ const Settings = () => {
 };
 
 export default Settings;
+

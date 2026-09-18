@@ -1,8 +1,9 @@
-import razor from "razorpay"
+import razor from "razorpay";
 
-const rzp=new razor({
-    key_id:process.env.RAZOR_1,
-    key_secret:process.env.RAZOR_2
-})
+const rzp = new razor({
+  key_id: process.env.RAZOR_1 || "rzp_test_placeholder_key",
+  key_secret: process.env.RAZOR_2 || "rzp_test_placeholder_secret",
+});
 
-export default rzp 
+export default rzp;
+ 

@@ -3,39 +3,48 @@
    Light & Dark Theme Engine, Cohesive Glassmorphism, Micro-Interactions
    ========================================================================== */
 
-/* ── Light Mode Token Definition (Default) ── */
+/* ── Light Mode Token Definition ── */
 :root {
-  --admin-bg: #f8fafc;
-  --admin-bg-secondary: #f1f5f9;
+  --admin-bg: #f4f6f8;
+  --admin-bg-secondary: #ffffff;
   --admin-sidebar-bg: #ffffff;
-  --admin-header-bg: rgba(255, 255, 255, 0.85);
+  --admin-header-bg: rgba(255, 255, 255, 0.9);
   --admin-card-bg: #ffffff;
   --admin-card-header: #f8fafc;
-  --admin-card-hover-bg: #fafafa;
+  --admin-card-hover-bg: #f8fafc;
   --admin-card-border: #e2e8f0;
   --admin-card-border-subtle: #f1f5f9;
 
-  --admin-text-main: #0f172a;
-  --admin-text-secondary: #334155;
-  --admin-text-muted: #64748b;
-  --admin-text-subtle: #94a3b8;
+  --admin-text-main: #09090b;
+  --admin-text-secondary: #27272a;
+  --admin-text-muted: #71717a;
+  --admin-text-subtle: #a1a1aa;
 
   --admin-input-bg: #ffffff;
-  --admin-input-border: #cbd5e1;
-  --admin-input-border-focus: #6366f1;
-  --admin-input-text: #0f172a;
-  --admin-input-placeholder: #94a3b8;
+  --admin-input-border: #d4d4d8;
+  --admin-input-border-focus: #10b981;
+  --admin-input-text: #09090b;
+  --admin-input-placeholder: #a1a1aa;
 
-  --admin-accent: #6366f1;
-  --admin-accent-hover: #4f46e5;
-  --admin-accent-subtle: #e0e7ff;
-  --admin-accent-text: #4338ca;
+  --admin-accent: #10b981;
+  --admin-accent-hover: #059669;
+  --admin-accent-subtle: #ecfdf5;
+  --admin-accent-text: #047857;
+  --admin-accent-glow: rgba(16, 185, 129, 0.3);
 
   /* Elevation Shadows */
   --admin-shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
   --admin-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
   --admin-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
   --admin-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+
+  /* Action Buttons */
+  --admin-item-bg: #ffffff;
+  --admin-item-border: #e2e8f0;
+  --admin-edit-btn-bg: #f4f4f5;
+  --admin-edit-btn-text: #18181b;
+  --admin-edit-btn-border: #e4e4e7;
+  --admin-edit-btn-hover: #e4e4e7;
 
   /* Status Badges */
   --admin-badge-pending-bg: #fffbeb;
@@ -54,94 +63,103 @@
   --admin-badge-cancelled-text: #be123c;
   --admin-badge-cancelled-border: #fecdd3;
 
-  --admin-badge-paid-bg: #f0fdf4;
-  --admin-badge-paid-text: #15803d;
-  --admin-badge-paid-border: #bbf7d0;
+  --admin-badge-paid-bg: #ecfdf5;
+  --admin-badge-paid-text: #047857;
+  --admin-badge-paid-border: #a7f3d0;
 
   --admin-badge-cod-bg: #fefce8;
   --admin-badge-cod-text: #a16207;
   --admin-badge-cod-border: #fef08a;
 
   /* Glassmorphism & Highlights */
-  --admin-glass-bg: rgba(255, 255, 255, 0.75);
+  --admin-glass-bg: rgba(255, 255, 255, 0.85);
   --admin-glass-border: rgba(226, 232, 240, 0.8);
   --admin-glass-blur: blur(12px);
 
   /* Scrollbar */
-  --admin-scrollbar-thumb: #cbd5e1;
-  --admin-scrollbar-thumb-hover: #94a3b8;
+  --admin-scrollbar-thumb: #d4d4d8;
+  --admin-scrollbar-thumb-hover: #a1a1aa;
 }
 
-/* ── Dark Mode Token Override ── */
+/* ── Dark Mode Token Override (AURA Luxury Matte Dark & Emerald Theme) ── */
 .dark,
 .dark-mode,
 .admin-root.dark,
 [data-theme="dark"] {
-  --admin-bg: #090d16;
-  --admin-bg-secondary: #0f172a;
-  --admin-sidebar-bg: #0e1424;
-  --admin-header-bg: rgba(14, 20, 36, 0.85);
-  --admin-card-bg: #111827;
-  --admin-card-header: #151d30;
-  --admin-card-hover-bg: #141d2e;
-  --admin-card-border: #1e293b;
-  --admin-card-border-subtle: #172033;
+  --admin-bg: #121212;
+  --admin-bg-secondary: #181818;
+  --admin-sidebar-bg: #121212;
+  --admin-header-bg: rgba(18, 18, 18, 0.95);
+  --admin-card-bg: #1e1e1e;
+  --admin-card-header: #181818;
+  --admin-card-hover-bg: #222222;
+  --admin-card-border: rgba(255, 255, 255, 0.1);
+  --admin-card-border-subtle: rgba(255, 255, 255, 0.06);
 
-  --admin-text-main: #f8fafc;
-  --admin-text-secondary: #e2e8f0;
-  --admin-text-muted: #94a3b8;
-  --admin-text-subtle: #64748b;
+  --admin-text-main: #ffffff;
+  --admin-text-secondary: #d4d4d8;
+  --admin-text-muted: #a1a1aa;
+  --admin-text-subtle: #71717a;
 
-  --admin-input-bg: #141d30;
-  --admin-input-border: #26334d;
-  --admin-input-border-focus: #818cf8;
-  --admin-input-text: #f8fafc;
-  --admin-input-placeholder: #64748b;
+  --admin-input-bg: #141414;
+  --admin-input-border: rgba(255, 255, 255, 0.12);
+  --admin-input-border-focus: #10b981;
+  --admin-input-text: #ffffff;
+  --admin-input-placeholder: #71717a;
 
-  --admin-accent: #6366f1;
-  --admin-accent-hover: #4f46e5;
-  --admin-accent-subtle: rgba(99, 102, 241, 0.15);
-  --admin-accent-text: #a5b4fc;
+  --admin-accent: #10b981;
+  --admin-accent-hover: #059669;
+  --admin-accent-subtle: rgba(16, 185, 129, 0.15);
+  --admin-accent-text: #10b981;
+  --admin-accent-glow: rgba(16, 185, 129, 0.35);
 
   /* Elevation Shadows with Ambient Glow */
-  --admin-shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
-  --admin-shadow-md: 0 4px 10px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
-  --admin-shadow-lg: 0 10px 20px -3px rgba(0, 0, 0, 0.6), 0 4px 8px -4px rgba(0, 0, 0, 0.5);
-  --admin-shadow-xl: 0 20px 30px -5px rgba(0, 0, 0, 0.7);
+  --admin-shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
+  --admin-shadow-md: 0 4px 10px -1px rgba(0, 0, 0, 0.6), 0 2px 4px -2px rgba(0, 0, 0, 0.5);
+  --admin-shadow-lg: 0 10px 20px -3px rgba(0, 0, 0, 0.7), 0 4px 8px -4px rgba(0, 0, 0, 0.6);
+  --admin-shadow-xl: 0 20px 30px -5px rgba(0, 0, 0, 0.8);
+
+  /* Action Buttons */
+  --admin-item-bg: #181818;
+  --admin-item-border: rgba(255, 255, 255, 0.08);
+  --admin-edit-btn-bg: rgba(255, 255, 255, 0.06);
+  --admin-edit-btn-text: #f4f4f5;
+  --admin-edit-btn-border: rgba(255, 255, 255, 0.12);
+  --admin-edit-btn-hover: rgba(255, 255, 255, 0.14);
 
   /* Status Badges */
-  --admin-badge-pending-bg: rgba(245, 158, 11, 0.12);
+  --admin-badge-pending-bg: rgba(245, 158, 11, 0.15);
   --admin-badge-pending-text: #fbbf24;
-  --admin-badge-pending-border: rgba(245, 158, 11, 0.25);
+  --admin-badge-pending-border: rgba(245, 158, 11, 0.3);
 
-  --admin-badge-shipping-bg: rgba(59, 130, 246, 0.12);
+  --admin-badge-shipping-bg: rgba(59, 130, 246, 0.15);
   --admin-badge-shipping-text: #60a5fa;
-  --admin-badge-shipping-border: rgba(59, 130, 246, 0.25);
+  --admin-badge-shipping-border: rgba(59, 130, 246, 0.3);
 
-  --admin-badge-delivered-bg: rgba(16, 185, 129, 0.12);
+  --admin-badge-delivered-bg: rgba(16, 185, 129, 0.18);
   --admin-badge-delivered-text: #34d399;
-  --admin-badge-delivered-border: rgba(16, 185, 129, 0.25);
+  --admin-badge-delivered-border: rgba(16, 185, 129, 0.35);
 
-  --admin-badge-cancelled-bg: rgba(244, 63, 94, 0.12);
+  --admin-badge-cancelled-bg: rgba(244, 63, 94, 0.15);
   --admin-badge-cancelled-text: #fb7185;
-  --admin-badge-cancelled-border: rgba(244, 63, 94, 0.25);
+  --admin-badge-cancelled-border: rgba(244, 63, 94, 0.3);
 
-  --admin-badge-paid-bg: rgba(34, 197, 94, 0.12);
-  --admin-badge-paid-text: #4ade80;
-  --admin-badge-paid-border: rgba(34, 197, 94, 0.25);
+  --admin-badge-paid-bg: rgba(16, 185, 129, 0.18);
+  --admin-badge-paid-text: #34d399;
+  --admin-badge-paid-border: rgba(16, 185, 129, 0.35);
 
-  --admin-badge-cod-bg: rgba(234, 179, 8, 0.12);
+  --admin-badge-cod-bg: rgba(234, 179, 8, 0.15);
   --admin-badge-cod-text: #facc15;
-  --admin-badge-cod-border: rgba(234, 179, 8, 0.25);
+  --admin-badge-cod-border: rgba(234, 179, 8, 0.3);
 
   /* Glassmorphism & Highlights */
-  --admin-glass-bg: rgba(14, 20, 36, 0.78);
-  --admin-glass-border: rgba(38, 51, 77, 0.75);
+  --admin-glass-bg: rgba(30, 30, 30, 0.85);
+  --admin-glass-border: rgba(255, 255, 255, 0.1);
   --admin-glass-blur: blur(14px);
 
   /* Scrollbar */
-  --admin-scrollbar-thumb: #26334d;
-  --admin-scrollbar-thumb-hover: #3b4b6b;
+  --admin-scrollbar-thumb: #27272a;
+  --admin-scrollbar-thumb-hover: #3f3f46;
 }
 
 /* ── Base Structural Layout ── */
@@ -212,14 +230,16 @@
 }
 
 .admin-sidebar-link.active {
-  color: #ffffff;
-  background: linear-gradient(135deg, var(--admin-accent), #4f46e5);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  color: #000000 !important;
+  background: #10b981 !important;
+  font-weight: 800;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
 }
 
 .dark .admin-sidebar-link.active,
-.dark-mode .admin-sidebar-link.active {
-  box-shadow: 0 0 16px rgba(99, 102, 241, 0.45);
+.dark-mode .admin-sidebar-link.active,
+[data-theme="dark"] .admin-sidebar-link.active {
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.45);
 }
 
 .admin-sidebar-link.danger-link {
@@ -318,7 +338,7 @@
 
 .admin-input:focus {
   border-color: var(--admin-input-border-focus);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
 }
 
 .admin-select {
@@ -339,7 +359,7 @@
 
 .admin-select:focus {
   border-color: var(--admin-input-border-focus);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
 }
 
 /* ── Buttons & Interactive Elements ── */
@@ -350,19 +370,20 @@
   gap: 0.5rem;
   padding: 0.625rem 1.25rem;
   font-size: 0.875rem;
-  font-weight: 700;
+  font-weight: 800;
   border-radius: 0.75rem;
-  color: #ffffff;
-  background: linear-gradient(135deg, var(--admin-accent), #4f46e5);
-  box-shadow: 0 2px 4px rgba(99, 102, 241, 0.25);
+  color: #000000;
+  background: #10b981;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
   border: none;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .admin-btn-primary:hover {
-  background: linear-gradient(135deg, #4f46e5, #4338ca);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+  background: #059669;
+  color: #000000;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
   transform: translateY(-1px);
 }
 
@@ -413,6 +434,125 @@
   background: linear-gradient(135deg, #dc2626, #b91c1c);
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
   transform: translateY(-1px);
+}
+
+/* ── UI Action Buttons (Settings & Catalog) ── */
+.admin-primary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 800;
+  border-radius: 0.75rem;
+  color: #000000;
+  background: #10b981;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.admin-primary-btn:hover:not(:disabled) {
+  background: #059669;
+  color: #000000;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+  transform: translateY(-1px);
+}
+
+.admin-primary-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.admin-catalog-outline-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 0.625rem;
+  color: var(--admin-text-main);
+  background-color: transparent;
+  border: 1px solid var(--admin-card-border);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.admin-catalog-outline-btn:hover {
+  background-color: var(--admin-bg-secondary);
+  border-color: var(--admin-accent);
+  color: var(--admin-accent);
+  transform: translateY(-1px);
+}
+
+.admin-edit-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.375rem 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 0.5rem;
+  color: var(--admin-edit-btn-text);
+  background-color: var(--admin-edit-btn-bg);
+  border: 1px solid var(--admin-edit-btn-border);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.admin-edit-pill:hover {
+  background-color: var(--admin-edit-btn-hover);
+  border-color: var(--admin-accent);
+  transform: translateY(-1px);
+}
+
+.admin-delete-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.375rem 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 0.5rem;
+  color: #ffffff;
+  background: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.25);
+}
+
+.admin-delete-pill:hover:not(:disabled) {
+  background: #dc2626;
+  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.35);
+  transform: translateY(-1px);
+}
+
+.admin-delete-pill:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.admin-product-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.625rem 0.875rem;
+  border-radius: 0.75rem;
+  background-color: var(--admin-item-bg);
+  border: 1px solid var(--admin-item-border);
+  transition: all 0.2s ease;
+}
+
+.admin-product-row:hover {
+  border-color: var(--admin-accent);
+  box-shadow: var(--admin-shadow-sm);
+  transform: translateX(2px);
 }
 
 /* ── Status Badges ── */
@@ -471,10 +611,12 @@
   border-radius: 1rem;
   overflow: hidden;
   box-shadow: var(--admin-shadow-sm);
+  -webkit-overflow-scrolling: touch;
 }
 
 .admin-table {
   width: 100%;
+  min-width: 640px;
   border-collapse: collapse;
   text-align: left;
   font-size: 0.875rem;

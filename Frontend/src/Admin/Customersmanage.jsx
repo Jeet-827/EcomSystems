@@ -82,7 +82,6 @@ const Customersmanage = () => {
 
   return (
     <div className="admin-layout font-sans">
-      <ToastContainer position="top-right" autoClose={3000} theme="colored" />
       <Nav />
 
       <main className="admin-main">
@@ -125,7 +124,7 @@ const Customersmanage = () => {
           {/* Metric Stats Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="admin-stat-card">
-              <div className="w-12 h-12 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xl font-bold">
+              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-xl font-bold">
                 👥
               </div>
               <div>
@@ -201,7 +200,7 @@ const Customersmanage = () => {
           {/* Customer Table */}
           {loading ? (
             <div className="admin-card p-16 text-center">
-              <div className="w-10 h-10 border-4 border-indigo-500/20 border-t-indigo-600 rounded-full animate-spin mx-auto mb-3" />
+              <div className="w-10 h-10 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin mx-auto mb-3" />
               <p className="text-sm font-semibold text-[var(--admin-text-muted)]">
                 Loading customer records...
               </p>
@@ -247,7 +246,7 @@ const Customersmanage = () => {
                           </td>
                           <td>
                             <div className="flex items-center gap-3">
-                              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white flex items-center justify-center font-bold text-xs shadow-sm">
+                              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-emerald-500 text-white flex items-center justify-center font-bold text-xs shadow-sm">
                                 {initials}
                               </div>
                               <span className="font-bold text-xs sm:text-sm text-[var(--admin-text-main)]">
@@ -306,7 +305,7 @@ const Customersmanage = () => {
           <div className="admin-card p-6 sm:p-7 max-w-lg w-full space-y-5 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between pb-3 border-b border-[var(--admin-card-border-subtle)]">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white flex items-center justify-center font-bold text-sm">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-emerald-500 text-white flex items-center justify-center font-bold text-sm">
                   {(selectedUser.name || selectedUser.email || "U").slice(0, 2).toUpperCase()}
                 </div>
                 <div>

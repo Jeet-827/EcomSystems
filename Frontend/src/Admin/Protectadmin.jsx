@@ -56,9 +56,9 @@ const Protectadmin = () => {
 
   if (loading || isAdmin === null) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center text-slate-600 font-sans">
+      <div className="min-h-screen bg-[#121212] flex items-center justify-center text-zinc-300 font-sans">
         <div className="flex items-center gap-3">
-          <div className="w-5 h-5 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+          <div className="w-5 h-5 border-2 border-[#10b981] border-t-transparent rounded-full animate-spin" />
           <span className="text-sm font-medium">Verifying Admin Credentials...</span>
         </div>
       </div>

@@ -60,6 +60,7 @@ function OrderDetail() {
     <div className="admin-layout font-sans">
       <Nav />
 
+      {/* Main Content Area */}
       <main className="admin-main">
         <div className="max-w-5xl mx-auto space-y-6">
           
@@ -67,14 +68,14 @@ function OrderDetail() {
           <div className="flex items-center justify-between pb-4 border-b border-[var(--admin-card-border)]">
             <Link
               to="/order"
-              className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-[var(--admin-accent)] hover:underline transition-all"
+              className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-emerald-500 hover:underline transition-all"
             >
               <span>←</span> Back to All Orders
             </Link>
 
             <button
               onClick={() => window.print()}
-              className="admin-btn-secondary text-xs py-1.5 px-3 print:hidden"
+              className="admin-btn-secondary text-xs print:hidden"
             >
               🖨️ Print Invoice
             </button>
@@ -83,7 +84,7 @@ function OrderDetail() {
           {/* Loading */}
           {loading && (
             <div className="admin-card p-16 text-center">
-              <div className="w-10 h-10 border-4 border-indigo-500/20 border-t-indigo-600 rounded-full animate-spin mx-auto mb-3" />
+              <div className="w-10 h-10 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin mx-auto mb-3" />
               <p className="text-sm font-semibold text-[var(--admin-text-muted)]">
                 Loading order information...
               </p>
@@ -92,7 +93,7 @@ function OrderDetail() {
 
           {/* Error Alert */}
           {error && (
-            <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs sm:text-sm flex items-center justify-between">
+            <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-500 text-xs sm:text-sm flex items-center justify-between">
               <span>{error}</span>
               <Link to="/order" className="underline font-bold">
                 Return to Orders
@@ -107,12 +108,14 @@ function OrderDetail() {
               <div className="admin-card p-6 sm:p-7 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold uppercase tracking-wider text-[var(--admin-text-subtle)]">
+                    <span className="text-xs font-bold uppercase tracking-wider text-[var(--admin-text-muted)]">
                       Order Reference
                     </span>
                     <span
-                      className={`admin-badge ${
-                        isPaid ? "admin-badge-paid" : "admin-badge-cod"
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${
+                        isPaid
+                          ? "bg-emerald-500/15 text-emerald-500 border-emerald-500/30"
+                          : "bg-amber-500/15 text-amber-500 border-amber-500/30"
                       }`}
                     >
                       {isPaid ? "💳 Paid" : "💵 COD"}
@@ -139,7 +142,7 @@ function OrderDetail() {
                   <span className="text-xs text-[var(--admin-text-muted)] block">
                     Total Amount
                   </span>
-                  <span className="text-2xl sm:text-3xl font-black text-[var(--admin-text-main)]">
+                  <span className="text-2xl sm:text-3xl font-black text-emerald-500 font-['Outfit']">
                     ₹{grandTotal.toLocaleString("en-IN")}
                   </span>
                 </div>
@@ -160,8 +163,8 @@ function OrderDetail() {
                     <div
                       className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs ${
                         currentStepIndex >= 0
-                          ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/30"
-                          : "bg-[var(--admin-bg-secondary)] text-[var(--admin-text-muted)] border border-[var(--admin-card-border)]"
+                          ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/30 font-black"
+                          : "bg-[var(--admin-bg)] text-[var(--admin-text-muted)] border border-[var(--admin-card-border)]"
                       }`}
                     >
                       ✓
@@ -176,8 +179,8 @@ function OrderDetail() {
                     <div
                       className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs ${
                         currentStepIndex >= 1
-                          ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/30"
-                          : "bg-[var(--admin-bg-secondary)] text-[var(--admin-text-muted)] border border-[var(--admin-card-border)]"
+                          ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/30 font-black"
+                          : "bg-[var(--admin-bg)] text-[var(--admin-text-muted)] border border-[var(--admin-card-border)]"
                       }`}
                     >
                       {currentStepIndex >= 1 ? "✓" : "2"}
@@ -192,8 +195,8 @@ function OrderDetail() {
                     <div
                       className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs ${
                         currentStepIndex >= 2
-                          ? "bg-emerald-600 text-white shadow-md shadow-emerald-500/30"
-                          : "bg-[var(--admin-bg-secondary)] text-[var(--admin-text-muted)] border border-[var(--admin-card-border)]"
+                          ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/30 font-black"
+                          : "bg-[var(--admin-bg)] text-[var(--admin-text-muted)] border border-[var(--admin-card-border)]"
                       }`}
                     >
                       {currentStepIndex >= 2 ? "✓" : "3"}
@@ -214,27 +217,27 @@ function OrderDetail() {
                   </h3>
                   <div className="space-y-2 text-xs">
                     <div>
-                      <span className="text-[var(--admin-text-subtle)] block">Name</span>
+                      <span className="text-[var(--admin-text-muted)] block">Name</span>
                       <span className="font-bold text-[var(--admin-text-main)] text-sm">
                         {order.name || "N/A"}
                       </span>
                     </div>
                     <div>
-                      <span className="text-[var(--admin-text-subtle)] block">Email</span>
-                      <span className="font-mono text-[var(--admin-text-main)]">
+                      <span className="text-[var(--admin-text-muted)] block">Email</span>
+                      <span className="font-mono text-[var(--admin-text-secondary)]">
                         {order.email}
                       </span>
                     </div>
                     <div>
-                      <span className="text-[var(--admin-text-subtle)] block">Shipping Address</span>
-                      <span className="text-[var(--admin-text-main)] font-medium">
+                      <span className="text-[var(--admin-text-muted)] block">Shipping Address</span>
+                      <span className="text-[var(--admin-text-secondary)] font-medium">
                         {order.address || "Address not provided"}
                       </span>
                     </div>
                     {order.phone && (
                       <div>
-                        <span className="text-[var(--admin-text-subtle)] block">Phone</span>
-                        <span className="text-[var(--admin-text-main)] font-medium">
+                        <span className="text-[var(--admin-text-muted)] block">Phone</span>
+                        <span className="text-[var(--admin-text-secondary)] font-medium">
                           {order.phone}
                         </span>
                       </div>
@@ -262,13 +265,13 @@ function OrderDetail() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-[var(--admin-text-muted)]">Shipping Charges</span>
-                      <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                      <span className="font-bold text-emerald-500">
                         FREE
                       </span>
                     </div>
                     <div className="pt-2 border-t border-[var(--admin-card-border-subtle)] flex justify-between text-sm">
                       <span className="font-black text-[var(--admin-text-main)]">Grand Total</span>
-                      <span className="font-black text-base text-[var(--admin-accent)]">
+                      <span className="font-black text-base text-emerald-500 font-['Outfit']">
                         ₹{grandTotal.toLocaleString("en-IN")}
                       </span>
                     </div>
@@ -290,7 +293,7 @@ function OrderDetail() {
                         <th>Item</th>
                         <th>Category</th>
                         <th>Product ID</th>
-                        <th className="text-right">Price</th>
+                        <th style={{ textAlign: "right" }}>Price</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -298,35 +301,37 @@ function OrderDetail() {
                         const img =
                           p?.productimage?.[0] ||
                           p?.image ||
-                          "https://via.placeholder.com/60?text=Item";
+                          "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=60&auto=format&fit=crop&q=80";
                         return (
                           <tr key={idx}>
                             <td>
                               <div className="flex items-center gap-3">
-                                <img
-                                  src={img}
-                                  alt={p?.title || "Item"}
-                                  className="w-10 h-10 rounded-xl object-cover border border-[var(--admin-card-border)]"
-                                />
+                                <div className="w-10 h-10 rounded-xl bg-[var(--admin-bg)] p-1 border border-[var(--admin-card-border)] flex items-center justify-center overflow-hidden shrink-0">
+                                  <img
+                                    src={img}
+                                    alt={p?.title || "Item"}
+                                    className="max-h-full max-w-full object-contain filter drop-shadow-sm"
+                                  />
+                                </div>
                                 <div>
-                                  <p className="font-bold text-xs sm:text-sm text-[var(--admin-text-main)]">
+                                  <p className="font-bold text-sm text-[var(--admin-text-main)]">
                                     {p?.title || "Product Item"}
                                   </p>
-                                  <p className="text-[11px] text-[var(--admin-text-muted)] line-clamp-1">
+                                  <p className="text-xs text-[var(--admin-text-muted)] line-clamp-1">
                                     {p?.description}
                                   </p>
                                 </div>
                               </div>
                             </td>
                             <td>
-                              <span className="admin-badge admin-badge-shipping text-[11px]">
-                                {p?.category || "General"}
+                              <span className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[var(--admin-bg)] border border-[var(--admin-card-border)] text-[var(--admin-text-secondary)] capitalize">
+                                +{p?.category || "General"}
                               </span>
                             </td>
                             <td className="font-mono text-xs text-[var(--admin-text-muted)]">
-                              {p?._id?.slice(-8) || "N/A"}
+                              #{p?._id?.slice(-8) || "N/A"}
                             </td>
-                            <td className="text-right font-black text-[var(--admin-text-main)]">
+                            <td className="font-black text-emerald-500 font-['Outfit']" style={{ textAlign: "right" }}>
                               ₹{Number(p?.price || 0).toLocaleString("en-IN")}
                             </td>
                           </tr>
