@@ -9,7 +9,9 @@ function Login() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
-
+  const handleGoogle = () => {
+    window.location.href = `${API_BASE_URL}/auth/google`;
+  };
   const navigate = useNavigate();
   const { setUser, setToken } = useUser();
 
@@ -129,6 +131,19 @@ function Login() {
               )}
               {loading ? "Signing in..." : "SIGN IN →"}
             </button>
+  <button
+                type="button"
+                onClick={handleGoogle}
+                className="w-full py-3.5 px-6 rounded-xl font-bold text-xs uppercase tracking-wider bg-white/10 hover:bg-white/15 text-white border border-white/10 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed shadow-lg transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <svg className="w-4 h-4" viewBox="0 0 24 24">
+                  <path fill="#EA4335" d="M12 5c1.56 0 2.98.54 4.09 1.58l3.07-3.07C17.3 1.83 14.84 1 12 1 7.42 1 3.51 3.59 1.54 7.36l3.7 2.87C6.18 7.39 8.84 5 12 5z" />
+                  <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58l3.71 2.88c2.16-2 3.71-4.94 3.71-8.7z" />
+                  <path fill="#FBBC05" d="M5.24 14.77c-.25-.74-.38-1.53-.38-2.35s.13-1.61.38-2.35L1.54 7.2C.56 9.16 0 11.35 0 13.7s.56 4.54 1.54 6.5l3.7-2.87c-.25-.74-.38-1.53-.38-2.56z" />
+                  <path fill="#34A853" d="M12 23c3.24 0 5.95-1.08 7.93-2.91l-3.71-2.88c-1.07.72-2.45 1.16-4.22 1.16-3.16 0-5.82-2.39-6.76-5.23L1.54 16c1.97 3.77 5.88 6.36 10.46 6.36z" />
+                </svg>
+                CONTINUE WITH GOOGLE
+              </button>
           </form>
 
           {/* Divider */}
