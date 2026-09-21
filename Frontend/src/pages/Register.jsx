@@ -3,11 +3,13 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { useUser } from "../store/Usercontext";
 import { API_BASE_URL } from "../config/api.config.js";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
 
@@ -132,14 +134,22 @@ function Register() {
                 <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm pointer-events-none text-zinc-400">🔒</span>
                 <input
                   id="reg-password"
-                  type="password"
-                  className="w-full pl-10 pr-4 py-3 bg-[#121212] border border-white/10 rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#10b981] focus:border-transparent transition-all"
+                  type={showPassword ? "text" : "password"}
+                  className="w-full pl-10 pr-11 py-3 bg-[#121212] border border-white/10 rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#10b981] focus:border-transparent transition-all"
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   autoComplete="new-password"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                  title={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <FiEyeOff size={16} /> : <FiEye size={16} />}
+                </button>
               </div>
             </div>
 

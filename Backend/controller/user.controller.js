@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import User from "../model/user.model.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
@@ -78,48 +79,164 @@ export const getMe = async (req, res) => {
   }
 };
 
+export const resolveUserId = (req) => {
+  if (req.UserId && mongoose.Types.ObjectId.isValid(req.UserId)) return String(req.UserId);
+  if (req.user?._id && mongoose.Types.ObjectId.isValid(req.user._id)) return String(req.user._id);
+
+  // 1. Extract from Authorization header
+  let token = null;
+  const authHeader = req.headers?.authorization;
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    token = authHeader.split(" ")[1]?.trim();
+  } else if (req.cookies?.token) {
+    token = req.cookies.token;
+  } else if (req.body?.token) {
+    token = req.body.token;
+  }
+
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.SECRET_ONE);
+      if (decoded?.id && mongoose.Types.ObjectId.isValid(decoded.id)) return String(decoded.id);
+    } catch {
+      try {
+        const decoded = jwt.verify(token, process.env.SECRET_TWO);
+        if (decoded?.id && mongoose.Types.ObjectId.isValid(decoded.id)) return String(decoded.id);
+      } catch {
+        // Invalid or expired token
+      }
+    }
+  }
+
+  // 2. Fallback to userId from body
+  const candidateId = req.body?.userId || req.body?.id || req.body?._id;
+  if (candidateId && mongoose.Types.ObjectId.isValid(candidateId)) {
+    return String(candidateId);
+  }
+
+  return null;
+};
+
 export const changePassword = async (req, res) => {
   try {
-    const { userId, oldPassword, newPassword } = req.body;
+    const {
+      email,
+      oldPassword,
+      password,
+      currentPassword,
+      newPassword,
+      newpassword,
+      new_password,
+    } = req.body;
 
-    const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    const currentPass = oldPassword || password || currentPassword;
+    const nextPass = newPassword || newpassword || new_password;
 
-    const isMatch = await bcrypt.compare(oldPassword, user.password);
-    if (!isMatch) return res.status(401).json({ message: "Incorrect old password" });
+    if (!nextPass) {
+      return res.status(400).json({ message: "New password is required" });
+    }
 
-    user.password = await bcrypt.hash(newPassword, 10);
+    if (typeof nextPass !== "string" || nextPass.trim().length < 6) {
+      return res.status(400).json({ message: "Password must be at least 6 characters long" });
+    }
+
+    // Resolve user by token / body id
+    const resolvedId = resolveUserId(req);
+    let user = null;
+
+    if (resolvedId) {
+      user = await User.findById(resolvedId);
+    }
+
+    // Fallback: search by email if provided
+    if (!user && email && typeof email === "string") {
+      user = await User.findOne({ email: email.trim().toLowerCase() });
+    }
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found. Please log in again." });
+    }
+
+    // If user has an existing password, verify old password
+    if (user.password) {
+      if (!currentPass) {
+        return res.status(400).json({ message: "Current password is required" });
+      }
+      const isMatch = await bcrypt.compare(currentPass, user.password);
+      if (!isMatch) {
+        return res.status(401).json({ message: "Incorrect old password" });
+      }
+    }
+
+    user.password = await bcrypt.hash(nextPass.trim(), 10);
     await user.save();
 
-    return res.status(200).json({ message: "Password changed successfully" });
+    return res.status(200).json({
+      success: true,
+      message: "Password changed successfully",
+    });
   } catch (error) {
     console.error("changePassword:", error.message);
-    return res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message || "Failed to change password" });
   }
 };
 
 export const editUser = async (req, res) => {
   try {
-    const { userId, name, email } = req.body;
+    const { name, username, email } = req.body;
 
-    const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    const resolvedId = resolveUserId(req);
+    let user = null;
 
-    if (email && email !== user.email) {
-      const emailExists = await User.findOne({ email }).lean();
-      if (emailExists) return res.status(400).json({ message: "Email already in use" });
-      user.email = email;
+    if (resolvedId) {
+      user = await User.findById(resolvedId);
     }
-    if (name) user.name = name;
+
+    // Fallback: search by email if provided
+    if (!user && email && typeof email === "string") {
+      user = await User.findOne({ email: email.trim().toLowerCase() });
+    }
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found. Please log in again." });
+    }
+
+    // Update email if provided and changed
+    if (email && typeof email === "string" && email.trim()) {
+      const normalizedEmail = email.trim().toLowerCase();
+      if (normalizedEmail !== user.email.toLowerCase()) {
+        const emailExists = await User.findOne({
+          email: normalizedEmail,
+          _id: { $ne: user._id },
+        }).lean();
+
+        if (emailExists) {
+          return res.status(400).json({ message: "Email already in use" });
+        }
+        user.email = normalizedEmail;
+      }
+    }
+
+    // Update name / username if provided
+    const newName = name !== undefined ? name : username;
+    if (newName !== undefined && typeof newName === "string" && newName.trim()) {
+      user.name = newName.trim();
+    }
 
     await user.save();
+
     return res.status(200).json({
+      success: true,
       message: "Profile updated successfully",
-      user: { _id: user._id, name: user.name, email: user.email },
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+      },
     });
   } catch (error) {
     console.error("editUser:", error.message);
-    return res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message || "Failed to update profile" });
   }
 };
 

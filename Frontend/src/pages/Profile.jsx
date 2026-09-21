@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useUser } from "../store/Usercontext.jsx";
 import { API_BASE_URL } from "../config/api.config.js";
@@ -6,6 +6,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 const Profile = () => {
   const { user, token, setUser } = useUser();
@@ -19,6 +20,9 @@ const Profile = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passLoading, setPassLoading] = useState(false);
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Edit details state
   const [editName, setEditName] = useState(user?.name || "");
@@ -80,8 +84,15 @@ const Profile = () => {
       try {
         await axios.post(
           `${API_BASE_URL}/api/v1/userdata/changepassword`,
-          { oldPassword, newPassword },
-          { headers: { Authorization: `Bearer ${token}` } }
+          {
+            oldPassword,
+            newPassword,
+            userId: user?._id || user?.id,
+          },
+          {
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+            withCredentials: true,
+          }
         );
         toast.success("Password updated successfully! 🔑");
         setOldPassword("");
@@ -93,7 +104,7 @@ const Profile = () => {
         setPassLoading(false);
       }
     },
-    [oldPassword, newPassword, confirmPassword, token]
+    [oldPassword, newPassword, confirmPassword, token, user]
   );
 
   const handleEditDetails = useCallback(
@@ -103,8 +114,15 @@ const Profile = () => {
       try {
         const response = await axios.put(
           `${API_BASE_URL}/api/v1/userdata/updateprofile`,
-          { name: editName, email: editEmail },
-          { headers: { Authorization: `Bearer ${token}` } }
+          {
+            name: editName,
+            email: editEmail,
+            userId: user?._id || user?.id,
+          },
+          {
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+            withCredentials: true,
+          }
         );
         toast.success("Profile updated successfully! ✨");
         if (response.data.user) {
@@ -116,10 +134,10 @@ const Profile = () => {
         setEditLoading(false);
       }
     },
-    [token, editName, editEmail, setUser]
+    [token, editName, editEmail, setUser, user]
   );
 
-  const renderContent = useMemo(() => {
+  const renderContent = () => {
     switch (activeTab) {
       case "edit details":
         return (
@@ -189,42 +207,74 @@ const Profile = () => {
                 <label className="block text-xs font-bold text-zinc-400 uppercase tracking-widest mb-2">
                   Current Password
                 </label>
-                <input
-                  type="password"
-                  value={oldPassword}
-                  onChange={(e) => setOldPassword(e.target.value)}
-                  className="w-full px-4 py-3 bg-[#121212] border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-[#10b981] transition-all text-sm"
-                  placeholder="Enter current password"
-                  required
-                />
+                <div className="relative">
+                  <input
+                    type={showOldPassword ? "text" : "password"}
+                    value={oldPassword}
+                    onChange={(e) => setOldPassword(e.target.value)}
+                    className="w-full px-4 py-3 pr-11 bg-[#121212] border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-[#10b981] transition-all text-sm"
+                    placeholder="Enter current password"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowOldPassword((prev) => !prev)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white transition-colors cursor-pointer p-1 z-10"
+                    title={showOldPassword ? "Hide password" : "Show password"}
+                  >
+                    {showOldPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+                  </button>
+                </div>
               </div>
 
               <div>
                 <label className="block text-xs font-bold text-zinc-400 uppercase tracking-widest mb-2">
                   New Password
                 </label>
-                <input
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full px-4 py-3 bg-[#121212] border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-[#10b981] transition-all text-sm"
-                  placeholder="Enter new password"
-                  required
-                />
+                <div className="relative">
+                  <input
+                    type={showNewPassword ? "text" : "password"}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="w-full px-4 py-3 pr-11 bg-[#121212] border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-[#10b981] transition-all text-sm"
+                    placeholder="Enter new password (min 6 characters)"
+                    minLength={6}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPassword((prev) => !prev)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white transition-colors cursor-pointer p-1 z-10"
+                    title={showNewPassword ? "Hide password" : "Show password"}
+                  >
+                    {showNewPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+                  </button>
+                </div>
               </div>
 
               <div>
                 <label className="block text-xs font-bold text-zinc-400 uppercase tracking-widest mb-2">
                   Confirm New Password
                 </label>
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full px-4 py-3 bg-[#121212] border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-[#10b981] transition-all text-sm"
-                  placeholder="Confirm new password"
-                  required
-                />
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full px-4 py-3 pr-11 bg-[#121212] border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-[#10b981] transition-all text-sm"
+                    placeholder="Confirm new password"
+                    minLength={6}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword((prev) => !prev)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white transition-colors cursor-pointer p-1 z-10"
+                    title={showConfirmPassword ? "Hide password" : "Show password"}
+                  >
+                    {showConfirmPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+                  </button>
+                </div>
               </div>
 
               <button
@@ -354,21 +404,8 @@ const Profile = () => {
       default:
         return null;
     }
-  }, [
-    activeTab,
-    loading,
-    error,
-    orders,
-    passLoading,
-    editLoading,
-    oldPassword,
-    newPassword,
-    confirmPassword,
-    editName,
-    editEmail,
-    handleChangePassword,
-    handleEditDetails,
-  ]);
+  };
+
 
   if (!user) {
     return (
@@ -478,7 +515,7 @@ const Profile = () => {
 
           {/* Content Body */}
           <div className="md:col-span-3 bg-[#1e1e1e] border border-white/10 rounded-3xl p-6 md:p-8 shadow-2xl">
-            {renderContent}
+            {renderContent()}
           </div>
         </div>
       </main>

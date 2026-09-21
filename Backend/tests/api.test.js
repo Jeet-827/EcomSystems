@@ -1,8 +1,10 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import request from "supertest";
+import jwt from "jsonwebtoken";
 import app from "../server.js";
 import { getCache, setCache, clearCachePattern, flushAllCache, getCacheStats } from "../utils/cache.js";
 import { AuthMiddleware } from "../middleware/auth.middleware.js";
+import { resolveUserId } from "../controller/user.controller.js";
 
 describe("Backend API & Utility Unit Tests", () => {
   beforeEach(() => {
@@ -110,6 +112,68 @@ describe("Backend API & Utility Unit Tests", () => {
 
       expect(statusCode).toBe(401);
       expect(jsonBody.message).toBe("Invalid or expired token");
+    });
+  });
+
+  describe("User Controller & Route Fixes", () => {
+    const validObjectId = "507f1f77bcf86cd799439011";
+
+    it("resolveUserId should extract user id from Bearer token", () => {
+      const token = jwt.sign({ id: validObjectId }, process.env.SECRET_ONE || "test_secret_1");
+      const req = { headers: { authorization: `Bearer ${token}` } };
+      const userId = resolveUserId(req);
+      expect(userId).toBe(validObjectId);
+    });
+
+    it("resolveUserId should extract user id from cookies", () => {
+      const token = jwt.sign({ id: validObjectId }, process.env.SECRET_TWO || "test_secret_2");
+      const req = { cookies: { token } };
+      const userId = resolveUserId(req);
+      expect(userId).toBe(validObjectId);
+    });
+
+    it("resolveUserId should fallback to body userId", () => {
+      const req = { body: { userId: validObjectId } };
+      const userId = resolveUserId(req);
+      expect(userId).toBe(validObjectId);
+    });
+
+    it("resolveUserId should return null if no token or id provided", () => {
+      const req = { headers: {}, body: {} };
+      const userId = resolveUserId(req);
+      expect(userId).toBeNull();
+    });
+
+    it("POST /api/v1/userdata/changepassword should validate short password", async () => {
+      const res = await request(app)
+        .post("/api/v1/userdata/changepassword")
+        .send({ oldPassword: "currentpassword", newPassword: "123" });
+      expect(res.statusCode).toBe(400);
+      expect(res.body.message).toContain("at least 6 characters");
+    });
+
+    it("POST /api/v1/changepassword should reject when user not found / not logged in", async () => {
+      const res = await request(app)
+        .post("/api/v1/changepassword")
+        .send({ oldPassword: "oldpassword123", newPassword: "newpassword123" });
+      expect(res.statusCode).toBe(404);
+      expect(res.body.message).toContain("User not found");
+    });
+
+    it("PUT /api/v1/userdata/updateprofile should reject when user not found / not logged in", async () => {
+      const res = await request(app)
+        .put("/api/v1/userdata/updateprofile")
+        .send({ name: "Updated Name" });
+      expect(res.statusCode).toBe(404);
+      expect(res.body.message).toContain("User not found");
+    });
+
+    it("PUT /api/v1/edituser should route properly to editUser controller", async () => {
+      const res = await request(app)
+        .put("/api/v1/edituser")
+        .send({ name: "Updated Name" });
+      expect(res.statusCode).toBe(404);
+      expect(res.body.message).toContain("User not found");
     });
   });
 });

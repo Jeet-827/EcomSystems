@@ -78,6 +78,7 @@ app.use((req, res, next) => {
 DBConnect();
 
 app.use("/api/v1", router);
+app.use("/api/v1/userdata", router);
 app.use("/auth", oAuthRouter);
 app.use("/api/v1/auth", oAuthRouter);
 app.use("/api/v1/product", ProductRoute);
