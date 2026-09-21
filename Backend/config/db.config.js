@@ -18,14 +18,13 @@ const DBConnect = async () => {
       minPoolSize: 0,
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
-      family: 4,
     };
 
     await mongoose.connect(process.env.MONGO_URL, options);
     isConnected = true;
     console.log("✅ MongoDB Connected with optimized connection pool");
   } catch (error) {
-
+    console.error("❌ MongoDB Connection Error:", error.message);
   }
 };
 

@@ -18,14 +18,13 @@ const DBConnect = async () => {
       minPoolSize: 0,
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
-      family: 4,
     };
 
     await mongoose.connect(process.env.MONGO_URL, options);
     isConnected = true;
     console.log("Admin MongoDB Connected");
   } catch (error) {
-
+    console.error("❌ Admin MongoDB Connection Error:", error.message);
   }
 };
 

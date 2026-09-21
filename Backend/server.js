@@ -16,6 +16,8 @@ import RazorPay from "./routes/razor.routes.js";
 import AdminRoutes from "./routes/admin.routes.js";
 import EditRouter from "./routes/editproduct.routes.js";
 import Alluser from "./routes/alluserget.routes.js";
+import oAuthRouter from "./routes/oAuth.route.js";
+import passport from "passport";
 import { getCacheStats, flushAllCache } from "./utils/cache.js";
 import { executeInWorkerThread } from "./services/worker.service.js";
 
@@ -63,6 +65,7 @@ app.use(
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
+app.use(passport.initialize());
 
 // Cache-Control for product GET APIs
 app.use((req, res, next) => {
@@ -75,6 +78,8 @@ app.use((req, res, next) => {
 DBConnect();
 
 app.use("/api/v1", router);
+app.use("/auth", oAuthRouter);
+app.use("/api/v1/auth", oAuthRouter);
 app.use("/api/v1/product", ProductRoute);
 app.use("/api/v1/productgenereted", productcreate);
 app.use("/api/v1/cartdata", CartRoute);

@@ -16,7 +16,6 @@ const UserSchema = mongoose.Schema(
 
     password: {
       type: String,
-      required: true,
     },
 
     orderId: [
@@ -24,6 +23,7 @@ const UserSchema = mongoose.Schema(
         type: mongoose.Schema.ObjectId,
       },
     ],
+    googleId:String,
 
     cartitem: [
       {
