@@ -73,6 +73,25 @@ export const Providerfun = ({ children }) => {
     verifySession();
   }, []);
 
+  // Centralized logout that sends request to backend and clears all client state & cookies
+  const logout = async () => {
+    try {
+      await axios.post(
+        `${API_BASE_URL}/api/v1/logout`,
+        {},
+        { withCredentials: true }
+      );
+    } catch (error) {
+      console.error("Logout request error:", error?.message || error);
+    } finally {
+      setUser(null);
+      setToken("");
+      setCartitem([]);
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+    }
+  };
+
   const contextValue = useMemo(
     () => ({
       user,
@@ -84,6 +103,7 @@ export const Providerfun = ({ children }) => {
       setToken,
       editproduct,
       setEditproduct,
+      logout,
     }),
     [user, loading, cartitem, token, editproduct]
   );

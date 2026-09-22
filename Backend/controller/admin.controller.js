@@ -150,11 +150,24 @@ export const adminupdate = async (req, res) => {
 
 export const AdminLogout = async (req, res) => {
   try {
-    res.clearCookie("token", {
+    const clearOptions = {
       httpOnly: true,
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       secure: process.env.NODE_ENV === "production",
-    });
+      path: "/",
+    };
+
+    res.clearCookie("token", clearOptions);
+    res.clearCookie("adminToken", clearOptions);
+    res.clearCookie("token");
+    res.clearCookie("adminToken");
+
+    if (req.cookies && typeof req.cookies === "object") {
+      Object.keys(req.cookies).forEach((cookieName) => {
+        res.clearCookie(cookieName, clearOptions);
+        res.clearCookie(cookieName);
+      });
+    }
 
     return res.status(200).json({
       message: "Admin Logout Successfully",

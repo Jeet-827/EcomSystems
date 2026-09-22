@@ -175,5 +175,14 @@ describe("Backend API & Utility Unit Tests", () => {
       expect(res.statusCode).toBe(404);
       expect(res.body.message).toContain("User not found");
     });
+
+    it("POST /api/v1/logout should clear cookies and return success", async () => {
+      const res = await request(app)
+        .post("/api/v1/logout")
+        .set("Cookie", ["token=fake_token", "adminToken=fake_admin_token"]);
+      expect(res.statusCode).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.message).toContain("Logged out successfully");
+    });
   });
 });

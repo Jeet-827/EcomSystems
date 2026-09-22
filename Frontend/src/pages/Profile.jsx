@@ -9,7 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
 const Profile = () => {
-  const { user, token, setUser } = useUser();
+  const { user, token, setUser, logout } = useUser();
   const [activeTab, setActiveTab] = useState("edit details");
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -500,9 +500,8 @@ const Profile = () => {
               </button>
 
               <button
-                onClick={() => {
-                  setUser(null);
-                  setToken("");
+                onClick={async () => {
+                  await logout();
                   navigate("/login");
                 }}
                 className={`shrink-0 snap-start px-4 py-3 rounded-2xl font-bold text-xs uppercase tracking-wider text-rose-400 hover:bg-rose-950/40 transition-all duration-200 flex items-center gap-2.5 cursor-pointer`}

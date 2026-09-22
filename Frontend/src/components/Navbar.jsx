@@ -26,7 +26,7 @@ const SEARCH_CATEGORIES = [
 ];
 
 function Navbar() {
-  const { user, setUser, setToken, cartitem } = useUser();
+  const { user, setUser, setToken, cartitem, logout } = useUser();
   const navigate = useNavigate();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -108,12 +108,11 @@ function Navbar() {
     [handleSearchSubmit]
   );
 
-  const handleLogout = useCallback(() => {
-    setUser(null);
-    setToken("");
+  const handleLogout = useCallback(async () => {
     setMenuOpen(false);
+    await logout();
     navigate("/login");
-  }, [setUser, setToken, navigate]);
+  }, [logout, navigate]);
 
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 

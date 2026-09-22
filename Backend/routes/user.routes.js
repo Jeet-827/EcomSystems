@@ -1,4 +1,4 @@
-import { Signup, Signin, getMe, changePassword, editUser, getAllUsers } from "../controller/user.controller.js";
+import { Signup, Signin, getMe, Logout, changePassword, editUser, getAllUsers } from "../controller/user.controller.js";
 import express from "express";
 
 const router = express.Router();
@@ -6,6 +6,12 @@ const router = express.Router();
 router.post("/signup", Signup);
 router.post("/signin", Signin);
 router.get("/me", getMe);
+router.post("/logout", Logout);
+router.get("/logout", Logout);
+router.post("/signout", Logout);
+router.get("/signout", Logout);
+router.post("/userdata/logout", Logout);
+router.get("/userdata/logout", Logout);
 // Password change routes
 router.post("/changepassword", changePassword);
 router.post("/userdata/changepassword", changePassword);

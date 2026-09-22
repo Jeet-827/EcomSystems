@@ -79,6 +79,39 @@ export const getMe = async (req, res) => {
   }
 };
 
+export const Logout = async (req, res) => {
+  try {
+    const clearOptions = {
+      httpOnly: true,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+    };
+
+    // Explicitly clear known auth cookies
+    res.clearCookie("token", clearOptions);
+    res.clearCookie("adminToken", clearOptions);
+    res.clearCookie("token");
+    res.clearCookie("adminToken");
+
+    // Clear any additional cookies attached to the request
+    if (req.cookies && typeof req.cookies === "object") {
+      Object.keys(req.cookies).forEach((cookieName) => {
+        res.clearCookie(cookieName, clearOptions);
+        res.clearCookie(cookieName);
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Logged out successfully and all cookies cleared",
+    });
+  } catch (error) {
+    console.error("Logout error:", error.message);
+    return res.status(500).json({ message: error.message || "Failed to logout" });
+  }
+};
+
 export const resolveUserId = (req) => {
   if (req.UserId && mongoose.Types.ObjectId.isValid(req.UserId)) return String(req.UserId);
   if (req.user?._id && mongoose.Types.ObjectId.isValid(req.user._id)) return String(req.user._id);
