@@ -23,7 +23,19 @@ const UserSchema = mongoose.Schema(
         type: mongoose.Schema.ObjectId,
       },
     ],
-    googleId:String,
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true,
+      index: true,
+    },
+
+    githubId: {
+      type: String,
+      unique: true,
+      sparse: true,
+      index: true,
+    },
 
     cartitem: [
       {

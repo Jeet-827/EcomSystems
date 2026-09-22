@@ -6,7 +6,7 @@ const oAuthRouter = Router();
 oAuthRouter.get('/google',passport.authenticate("google",{scope:["email","profile"],session:false}))
 
 oAuthRouter.get('/google/callback',passport.authenticate("google",{session:false, failureRedirect: process.env.FRONTEND_URL}),(req, res) => {
-    
+  
   const user = req.user;
 
   const refreshToken = jwt.sign({ id: user._id }, process.env.SECRET_TWO, {

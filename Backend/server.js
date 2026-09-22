@@ -20,7 +20,7 @@ import oAuthRouter from "./routes/oAuth.route.js";
 import passport from "passport";
 import { getCacheStats, flushAllCache } from "./utils/cache.js";
 import { executeInWorkerThread } from "./services/worker.service.js";
-
+import oAuthgitRouter from "./routes/oAuthgit.route.js";
 const app = express();
 
 // Security & performance
@@ -92,7 +92,8 @@ app.use("/api/v1/admin", AdminRoutes);
 app.use("/api/v1/edit", EditRouter);
 app.use("/api/v1/user", Alluser);
 app.use("/api/v1/alluser", Alluser);
-
+app.use("/auth", oAuthgitRouter);
+app.use("/api/v1/auth", oAuthgitRouter);
 // Cache Monitoring & Control Routes
 app.get("/api/v1/cache/stats", (req, res) => {
   res.json({
