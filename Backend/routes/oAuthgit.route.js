@@ -8,7 +8,7 @@ const oAuthgitRouter = Router();
 oAuthgitRouter.get(
     "/github",
     passport.authenticate("github", {
-        scope: ["user:email"],
+        scope: ["read:user", "user:email"],
         session: false
     })
 );
