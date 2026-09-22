@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, useMemo } from "react";
+import { createContext, useContext, useEffect, useState, useMemo, useCallback } from "react";
 import axios from "axios";
 import { API_BASE_URL } from "../config/api.config.js";
 
@@ -24,6 +24,16 @@ export const Providerfun = ({ children }) => {
     }
   });
 
+  // Initialize wishlist state from localStorage
+  const [wishlist, setWishlist] = useState(() => {
+    try {
+      const savedWishlist = localStorage.getItem("treo_wishlist");
+      return savedWishlist ? JSON.parse(savedWishlist) : [];
+    } catch {
+      return [];
+    }
+  });
+
   const [loading, setLoading] = useState(false);
   const [cartitem, setCartitem] = useState([]);
   const [editproduct, setEditproduct] = useState([]);
@@ -45,6 +55,59 @@ export const Providerfun = ({ children }) => {
       localStorage.removeItem("token");
     }
   }, [token]);
+
+  // Sync wishlist state to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem("treo_wishlist", JSON.stringify(wishlist));
+    } catch (e) {
+      console.error("Failed to save wishlist to localStorage:", e);
+    }
+  }, [wishlist]);
+
+  // Wishlist helper methods
+  const isInWishlist = useCallback(
+    (productId) => {
+      if (!productId) return false;
+      return wishlist.some((item) => (item._id || item.id) === productId);
+    },
+    [wishlist]
+  );
+
+  const addToWishlist = useCallback((product) => {
+    if (!product) return;
+    const pId = product._id || product.id;
+    setWishlist((prev) => {
+      if (prev.some((item) => (item._id || item.id) === pId)) return prev;
+      return [product, ...prev];
+    });
+  }, []);
+
+  const removeFromWishlist = useCallback((productId) => {
+    if (!productId) return;
+    setWishlist((prev) => prev.filter((item) => (item._id || item.id) !== productId));
+  }, []);
+
+  const toggleWishlist = useCallback((product) => {
+    if (!product) return false;
+    const pId = product._id || product.id;
+    let added = false;
+    setWishlist((prev) => {
+      const exists = prev.some((item) => (item._id || item.id) === pId);
+      if (exists) {
+        added = false;
+        return prev.filter((item) => (item._id || item.id) !== pId);
+      } else {
+        added = true;
+        return [product, ...prev];
+      }
+    });
+    return added;
+  }, []);
+
+  const clearWishlist = useCallback(() => {
+    setWishlist([]);
+  }, []);
 
   // Silent verification with backend on mount
   const verifySession = async () => {
@@ -103,9 +166,29 @@ export const Providerfun = ({ children }) => {
       setToken,
       editproduct,
       setEditproduct,
+      wishlist,
+      setWishlist,
+      isInWishlist,
+      addToWishlist,
+      removeFromWishlist,
+      toggleWishlist,
+      clearWishlist,
+      wishlistCount: wishlist.length,
       logout,
     }),
-    [user, loading, cartitem, token, editproduct]
+    [
+      user,
+      loading,
+      cartitem,
+      token,
+      editproduct,
+      wishlist,
+      isInWishlist,
+      addToWishlist,
+      removeFromWishlist,
+      toggleWishlist,
+      clearWishlist,
+    ]
   );
 
   return (

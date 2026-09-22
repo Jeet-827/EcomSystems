@@ -2,15 +2,22 @@ import { useState, useCallback, useMemo, useEffect } from "react";
 import axios from "axios";
 import { useUser } from "../store/Usercontext";
 import { API_BASE_URL } from "../config/api.config.js";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useNavigate, useLocation, Link } from "react-router-dom";
+import {
+  FaLock,
+  FaTruck,
+  FaShieldAlt,
+  FaMapMarkerAlt,
+  FaCreditCard,
+  FaMoneyBillWave,
+  FaArrowLeft,
+  FaCheckCircle,
+} from "react-icons/fa";
 
 const RAZOR_KEY = "rzp_test_TZQOZ3uu5gp2Yy";
-
-
 
 function loadRazorpay() {
   return new Promise((resolve) => {
@@ -37,14 +44,13 @@ function Checkout() {
     street: "",
     city: "",
     state: "",
-    country: "",
+    country: "India",
     pincode: "",
     phonenumber: "",
   });
 
   const [loading, setLoading] = useState(false);
 
-  /* Ensure cart data is fetched from server on mount if empty and not a direct buy */
   useEffect(() => {
     const syncCart = async () => {
       if (token && !directBuyItem) {
@@ -56,7 +62,7 @@ function Checkout() {
           const cartList = res.data.cart || res.data.card || [];
           setCartitem(cartList);
         } catch {
-          // silent — cart sync failure is non-critical
+          // silent
         }
       }
     };
@@ -68,35 +74,33 @@ function Checkout() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   }, []);
 
-  /* Validate all address fields before placing any order */
   const validateAddress = () => {
     const required = [
-      { key: "houseNo",     label: "House No / Flat" },
-      { key: "street",      label: "Street / Area" },
-      { key: "city",        label: "City" },
-      { key: "state",       label: "State" },
-      { key: "country",     label: "Country" },
-      { key: "pincode",     label: "Pincode" },
+      { key: "houseNo", label: "House / Flat No" },
+      { key: "street", label: "Street / Colony" },
+      { key: "city", label: "City" },
+      { key: "state", label: "State" },
+      { key: "country", label: "Country" },
+      { key: "pincode", label: "Pincode" },
       { key: "phonenumber", label: "Phone Number" },
     ];
     for (const { key, label } of required) {
       if (!formData[key] || !String(formData[key]).trim()) {
-        toast.error(`⚠️ ${label} is required.`);
+        toast.error(`${label} is required.`);
         return false;
       }
     }
     if (String(formData.pincode).length !== 6) {
-      toast.error("⚠️ Pincode must be exactly 6 digits.");
+      toast.error("Pincode must be exactly 6 digits.");
       return false;
     }
     if (String(formData.phonenumber).length < 10) {
-      toast.error("⚠️ Phone number must be at least 10 digits.");
+      toast.error("Phone number must be at least 10 digits.");
       return false;
     }
     return true;
   };
 
-  /* Active checkout items (direct buy item OR full cart) */
   const checkoutItems = useMemo(() => {
     if (directBuyItem) {
       const imgSrc = Array.isArray(directBuyItem.productimage)
@@ -116,7 +120,6 @@ function Checkout() {
     return cartitem || [];
   }, [directBuyItem, directQuantity, cartitem]);
 
-  /* Memoised order total */
   const orderTotal = useMemo(
     () =>
       checkoutItems.reduce(
@@ -126,7 +129,6 @@ function Checkout() {
     [checkoutItems]
   );
 
-  /* shared helper to save order to DB */
   const saveOrder = async (paymentStatus) => {
     const productIds = checkoutItems.map((item) => item.productid || item._id);
     await axios.post(
@@ -134,14 +136,16 @@ function Checkout() {
       {
         userid: user?._id,
         productid: productIds,
-        address: [{
-          houseNo: formData.houseNo,
-          street: formData.street,
-          city: formData.city,
-          state: formData.state,
-          country: formData.country,
-          pincode: formData.pincode,
-        }],
+        address: [
+          {
+            houseNo: formData.houseNo,
+            street: formData.street,
+            city: formData.city,
+            state: formData.state,
+            country: formData.country,
+            pincode: formData.pincode,
+          },
+        ],
         phonenumber: Number(formData.phonenumber),
         payment: paymentStatus,
       },
@@ -149,7 +153,6 @@ function Checkout() {
     );
   };
 
-  /* COD */
   const handleSubmit = useCallback(
     async (e) => {
       e.preventDefault();
@@ -161,9 +164,9 @@ function Checkout() {
       setLoading(true);
       try {
         await saveOrder("unpaid");
-        toast.success("🎉 Order Placed Successfully!");
+        toast.success("Order Placed with Cash on Delivery!");
         if (!directBuyItem) setCartitem([]);
-        setTimeout(() => navigate("/home"), 2000);
+        setTimeout(() => navigate("/profile"), 1500);
       } catch {
         toast.error("Failed to place order. Please try again.");
       } finally {
@@ -174,7 +177,6 @@ function Checkout() {
     [checkoutItems, directBuyItem, user, formData, token, navigate, setCartitem]
   );
 
-  /* Razorpay */
   const handleRazorpay = async () => {
     if (!checkoutItems || checkoutItems.length === 0) {
       toast.error("Your cart is empty!");
@@ -184,7 +186,11 @@ function Checkout() {
     setLoading(true);
     try {
       const ok = await loadRazorpay();
-      if (!ok) { toast.error("Razorpay failed to load."); setLoading(false); return; }
+      if (!ok) {
+        toast.error("Razorpay failed to load.");
+        setLoading(false);
+        return;
+      }
 
       const { data } = await axios.post(
         `${API_BASE_URL}/api/v1/make/payment`,
@@ -196,51 +202,37 @@ function Checkout() {
         key: RAZOR_KEY,
         amount: data.order.amount,
         currency: data.order.currency,
-        name: "E-System Store",
+        name: "TREO Tech Store",
         order_id: data.order.id,
         prefill: {
           name: user?.name || "Customer",
           email: user?.email || "customer@example.com",
           contact: formData.phonenumber || "9876543210",
         },
-        theme: { color: "#2563eb" },
-        config: {
-          display: {
-            blocks: {
-              upi_block: {
-                name: "Pay via UPI / QR (GPay, PhonePe, Paytm)",
-                instruments: [
-                  { method: "upi" }
-                ]
-              },
-              other_block: {
-                name: "Cards, Netbanking & Wallets",
-                instruments: [
-                  { method: "card" },
-                  { method: "netbanking" },
-                  { method: "wallet" }
-                ]
-              }
-            },
-            sequence: ["block.upi_block", "block.other_block"],
-            preferences: {
-              show_default_blocks: true
-            }
-          }
-        },
+        theme: { color: "#4f46e5" },
         handler: async () => {
           try {
             await saveOrder("paid");
-            toast.success("✅ Payment Successful!");
+            toast.success("Payment Successful! Order Confirmed.");
             if (!directBuyItem) setCartitem([]);
-            setTimeout(() => navigate("/home"), 2000);
-          } catch { toast.error("Payment done but order save failed."); }
+            setTimeout(() => navigate("/profile"), 1500);
+          } catch {
+            toast.error("Payment done but order save failed.");
+          }
         },
-        modal: { ondismiss: () => { toast.info("Payment cancelled."); setLoading(false); } },
+        modal: {
+          ondismiss: () => {
+            toast.info("Payment cancelled.");
+            setLoading(false);
+          },
+        },
       };
 
       const rzp = new window.Razorpay(options);
-      rzp.on("payment.failed", (r) => { toast.error(r.error.description); setLoading(false); });
+      rzp.on("payment.failed", (r) => {
+        toast.error(r.error.description);
+        setLoading(false);
+      });
       rzp.open();
     } catch {
       toast.error("Could not initiate payment.");
@@ -249,196 +241,214 @@ function Checkout() {
   };
 
   return (
-    <div className="checkout-page min-h-screen flex flex-col bg-[#121212] text-white font-sans">
+    <div className="min-h-screen flex flex-col bg-[#f4f6fb] text-slate-900 font-sans">
       <Navbar />
 
-      <main className="flex-grow py-12 px-4 sm:px-6 lg:px-8 flex justify-center items-start text-white mt-16">
-        <div className="max-w-3xl w-full bg-[#1e1e1e] p-8 rounded-3xl shadow-2xl border border-white/10">
-          <div className="mb-8 text-center">
-            <h2 className="text-3xl font-black text-white mb-2 tracking-widest font-['Outfit'] uppercase">
-              SECURE CHECKOUT
-            </h2>
-            <p className="text-zinc-400 text-xs uppercase tracking-widest">
-              Enter your luxury delivery details to complete your order
-            </p>
+      <main className="flex-grow max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="flex items-center justify-between pb-6 mb-6 border-b border-slate-200">
+          <div>
+            <div className="flex items-center gap-2 text-xs text-slate-400 mb-1">
+              <Link to="/cart" className="hover:text-[#4f46e5]">Cart</Link>
+              <span>›</span>
+              <span className="text-slate-800 font-bold">Checkout</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 font-['Outfit']">
+              Complete Your Order
+            </h1>
           </div>
 
-          {/* Cart / Direct Order Items Summary */}
-          {checkoutItems && checkoutItems.length > 0 ? (
-            <div className="mb-8 bg-[#181818] p-5 rounded-2xl border border-white/10">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-xs font-extrabold text-[#10b981] uppercase tracking-widest">
-                  Order Items Summary ({checkoutItems.length} item{checkoutItems.length > 1 ? "s" : ""})
-                </h3>
-                {directBuyItem && (
-                  <span className="text-[10px] font-extrabold text-black bg-[#10b981] px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                    ⚡ Direct Purchase
-                  </span>
-                )}
-              </div>
-              <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
-                {checkoutItems.map((item, idx) => (
-                  <div
-                    key={item._id || idx}
-                    className="flex items-center justify-between bg-[#121212] p-3 rounded-xl border border-white/5 text-xs"
-                  >
-                    <div className="flex items-center gap-3 truncate">
-                      <img
-                        src={item.itemimage}
-                        alt={item.producttitle}
-                        className="w-10 h-10 object-contain bg-[#181818] rounded-md border border-white/10 shrink-0 p-1"
-                      />
-                      <div className="truncate">
-                        <p className="font-bold text-white truncate">
-                          {item.producttitle}
-                        </p>
-                        {item.quantity > 1 && (
-                          <p className="text-[11px] text-zinc-400">Qty: {item.quantity}</p>
-                        )}
-                      </div>
-                    </div>
-                    <span className="font-extrabold text-[#10b981] shrink-0">
-                      ₹{item.productprice * (item.quantity || 1)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-sm">
-                <span className="font-bold text-zinc-300 uppercase text-xs tracking-wider">Total Amount Payable:</span>
-                <span className="text-xl font-black text-[#10b981]">₹{orderTotal}</span>
-              </div>
-            </div>
-          ) : (
-            <div className="mb-8 p-6 bg-amber-950/40 border border-amber-500/30 rounded-2xl text-center">
-              <p className="text-amber-300 font-semibold text-xs mb-3 uppercase tracking-wider">
-                ⚠️ Your bag is currently empty!
-              </p>
-              <Link
-                to="/allproducts"
-                className="inline-block px-5 py-2.5 bg-[#10b981] hover:bg-[#059669] text-white font-bold text-xs uppercase tracking-wider rounded-lg shadow-sm transition-all"
-              >
-                Browse & Add Products
-              </Link>
-            </div>
-          )}
+          <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200">
+            <FaLock size={11} /> 256-Bit SSL Encrypted
+          </div>
+        </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="bg-[#181818] p-6 rounded-2xl border border-white/10">
-              <h3 className="text-sm font-bold mb-4 text-white uppercase tracking-widest flex items-center gap-2">
-                <span>📍</span> Shipping Address
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div>
-                  <label className="block text-xs font-bold mb-1.5 text-zinc-400 uppercase tracking-wider">
-                    House No / Flat
-                  </label>
-                  <input
-                    type="text"
-                    name="houseNo"
-                    value={formData.houseNo}
-                    onChange={handleChange}
-                    required
-                    placeholder="e.g. 101, A-Wing"
-                    className="w-full px-4 py-2.5 bg-[#121212] border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#10b981] transition-all text-white placeholder-zinc-500 text-xs"
-                  />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Left: Shipping Form */}
+          <div className="lg:col-span-7 space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-5">
+                <div className="flex items-center gap-2 text-sm font-black text-slate-900 uppercase font-['Outfit'] pb-3 border-b border-slate-100">
+                  <FaMapMarkerAlt className="text-[#4f46e5]" />
+                  <span>Delivery Address</span>
                 </div>
-                <div>
-                  <label className="block text-xs font-bold mb-1.5 text-zinc-400 uppercase tracking-wider">
-                    Street / Area
-                  </label>
-                  <input
-                    type="text"
-                    name="street"
-                    value={formData.street}
-                    onChange={handleChange}
-                    required
-                    placeholder="e.g. Main Street"
-                    className="w-full px-4 py-2.5 bg-[#121212] border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#10b981] transition-all text-white placeholder-zinc-500 text-xs"
-                  />
-                </div>
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
-                {["city", "state", "country"].map((field) => (
-                  <div key={field}>
-                    <label className="block text-xs font-bold mb-1.5 text-zinc-400 uppercase tracking-wider">
-                      {field}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold mb-1.5 text-slate-600 uppercase">
+                      House No / Flat
                     </label>
                     <input
                       type="text"
-                      name={field}
-                      value={formData[field]}
+                      name="houseNo"
+                      value={formData.houseNo}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-2.5 bg-[#121212] border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#10b981] transition-all text-white text-xs"
+                      placeholder="e.g. 101, A-Wing"
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#4f46e5] text-slate-900 placeholder-slate-400 text-xs"
                     />
                   </div>
-                ))}
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
-                <div>
-                  <label className="block text-xs font-bold mb-1.5 text-zinc-400 uppercase tracking-wider">
-                    Pincode
-                  </label>
-                  <input
-                    type="text"
-                    name="pincode"
-                    value={formData.pincode}
-                    onChange={handleChange}
-                    required
-                    minLength="6"
-                    maxLength="6"
-                    placeholder="6-digit PIN"
-                    className="w-full px-4 py-2.5 bg-[#121212] border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#10b981] transition-all text-white placeholder-zinc-500 text-xs"
-                  />
+                  <div>
+                    <label className="block text-xs font-bold mb-1.5 text-slate-600 uppercase">
+                      Street / Colony
+                    </label>
+                    <input
+                      type="text"
+                      name="street"
+                      value={formData.street}
+                      onChange={handleChange}
+                      required
+                      placeholder="e.g. MG Road"
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#4f46e5] text-slate-900 placeholder-slate-400 text-xs"
+                    />
+                  </div>
                 </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold mb-1.5 text-slate-600 uppercase">
+                      City
+                    </label>
+                    <input
+                      type="text"
+                      name="city"
+                      value={formData.city}
+                      onChange={handleChange}
+                      required
+                      placeholder="City"
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#4f46e5] text-slate-900 text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold mb-1.5 text-slate-600 uppercase">
+                      State
+                    </label>
+                    <input
+                      type="text"
+                      name="state"
+                      value={formData.state}
+                      onChange={handleChange}
+                      required
+                      placeholder="State"
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#4f46e5] text-slate-900 text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold mb-1.5 text-slate-600 uppercase">
+                      Pincode
+                    </label>
+                    <input
+                      type="text"
+                      name="pincode"
+                      value={formData.pincode}
+                      onChange={handleChange}
+                      required
+                      maxLength="6"
+                      placeholder="6-digit PIN"
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#4f46e5] text-slate-900 text-xs"
+                    />
+                  </div>
+                </div>
+
                 <div>
-                  <label className="block text-xs font-bold mb-1.5 text-zinc-400 uppercase tracking-wider">
-                    Phone Number
+                  <label className="block text-xs font-bold mb-1.5 text-slate-600 uppercase">
+                    Phone Number (for delivery updates)
                   </label>
                   <input
-                    type="number"
+                    type="tel"
                     name="phonenumber"
                     value={formData.phonenumber}
                     onChange={handleChange}
                     required
                     placeholder="10-digit mobile number"
-                    className="w-full px-4 py-2.5 bg-[#121212] border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#10b981] transition-all text-white placeholder-zinc-500 text-xs"
+                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#4f46e5] text-slate-900 text-xs"
                   />
                 </div>
               </div>
+
+              {/* Payment Methods */}
+              <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+                <h3 className="text-sm font-black text-slate-900 uppercase font-['Outfit'] pb-3 border-b border-slate-100">
+                  Select Payment Method
+                </h3>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Razorpay Button */}
+                  <button
+                    type="button"
+                    onClick={handleRazorpay}
+                    disabled={loading || checkoutItems.length === 0}
+                    className="p-4 rounded-2xl border-2 border-[#4f46e5] bg-indigo-50/50 hover:bg-indigo-50 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all shadow-xs"
+                  >
+                    <FaCreditCard size={22} className="text-[#4f46e5]" />
+                    <span className="text-xs font-black text-slate-900 uppercase">
+                      Pay Online (Razorpay)
+                    </span>
+                    <span className="text-[10px] text-slate-500">
+                      UPI, Credit/Debit Cards, NetBanking
+                    </span>
+                  </button>
+
+                  {/* COD Button */}
+                  <button
+                    type="submit"
+                    disabled={loading || checkoutItems.length === 0}
+                    className="p-4 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all shadow-xs"
+                  >
+                    <FaMoneyBillWave size={22} className="text-emerald-600" />
+                    <span className="text-xs font-black text-slate-900 uppercase">
+                      Cash on Delivery (COD)
+                    </span>
+                    <span className="text-[10px] text-slate-500">
+                      Pay cash upon package arrival
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          {/* Right: Order Summary Sidebar */}
+          <div className="lg:col-span-5 space-y-6">
+            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+              <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider font-['Outfit'] border-b border-slate-100 pb-3">
+                Items in Order ({checkoutItems.length})
+              </h3>
+
+              <div className="space-y-3 max-h-60 overflow-y-auto pr-1 divide-y divide-slate-100">
+                {checkoutItems.map((item, idx) => (
+                  <div key={idx} className="flex items-center gap-3 pt-2">
+                    <img
+                      src={item.itemimage}
+                      alt={item.producttitle}
+                      className="w-12 h-12 object-contain bg-slate-50 rounded-lg p-1 border border-slate-100"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-bold text-slate-800 truncate">{item.producttitle}</p>
+                      <p className="text-[11px] text-slate-400">Qty: {item.quantity || 1}</p>
+                    </div>
+                    <span className="text-xs font-black text-slate-900">
+                      ₹{Number(item.productprice * (item.quantity || 1)).toLocaleString()}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="pt-4 border-t border-slate-100 space-y-2 text-xs text-slate-600">
+                <div className="flex justify-between">
+                  <span>Subtotal</span>
+                  <span className="font-bold text-slate-900">₹{orderTotal.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Delivery</span>
+                  <span className="font-bold text-emerald-600">FREE</span>
+                </div>
+                <div className="flex justify-between pt-2 border-t border-slate-100 text-sm font-black text-slate-900">
+                  <span>Total Amount</span>
+                  <span className="text-lg text-[#4f46e5]">₹{orderTotal.toLocaleString()}</span>
+                </div>
+              </div>
             </div>
-
-            {/* Payment Options Heading */}
-            <h3 className="text-xs font-bold text-zinc-300 uppercase tracking-widest mt-6 mb-3">
-              Select Payment Method:
-            </h3>
-
-            {/* 2 Payment Buttons */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* COD */}
-              <button
-                type="submit"
-                disabled={loading || !checkoutItems || checkoutItems.length === 0}
-                className="py-3.5 px-4 bg-zinc-800 hover:bg-zinc-700 text-white font-bold uppercase tracking-wider rounded-xl border border-white/10 transition-all duration-200 active:scale-95 disabled:opacity-50 flex flex-col items-center justify-center gap-1 cursor-pointer text-xs"
-              >
-                <span className="text-base">💵</span>
-                <span>Cash on Delivery</span>
-              </button>
-
-              {/* Razorpay */}
-              <button
-                type="button"
-                onClick={handleRazorpay}
-                disabled={loading || !checkoutItems || checkoutItems.length === 0}
-                className="py-3.5 px-4 bg-[#10b981] hover:bg-[#059669] text-white font-bold uppercase tracking-wider rounded-xl transition-all duration-200 active:scale-95 disabled:opacity-50 flex flex-col items-center justify-center gap-1 cursor-pointer text-xs"
-              >
-                <span className="text-base">💳 Razorpay</span>
-                <span className="text-[10px] text-emerald-100 font-normal">(Cards, Netbanking & UPI)</span>
-              </button>
-            </div>
-          </form>
+          </div>
         </div>
       </main>
 

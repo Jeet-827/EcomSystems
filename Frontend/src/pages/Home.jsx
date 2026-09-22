@@ -4,90 +4,71 @@ import { useUser } from "../store/Usercontext.jsx";
 import { API_BASE_URL } from "../config/api.config.js";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useNavigate, Link } from "react-router-dom";
+import { FaShoppingCart, FaHeart, FaStar, FaSlidersH, FaSearch } from "react-icons/fa";
 
-/* ── Memoised product card ── */
+/* ── Memoised Light Tech Product Card ── */
 const HomeProductCard = memo(({ product, onAddToCart, onProductClick }) => {
   const imgSrc = Array.isArray(product.productimage)
     ? product.productimage[0]
-    : product.productimage;
+    : product.productimage || "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=500&auto=format&fit=crop&q=60";
 
   return (
     <div
       onClick={() => onProductClick(product._id)}
-      className="group card-aura-dark overflow-hidden flex flex-col justify-between cursor-pointer h-full border border-white/10 rounded-2xl sm:rounded-[28px] bg-[#1e1e1e] hover:border-[#10b981]/60 transition-all duration-300 shadow-xl"
+      className="group card-tech flex flex-col justify-between cursor-pointer h-full bg-white border border-slate-200 hover:border-indigo-300 transition-all duration-300 p-4"
     >
-      <div className="relative w-full h-40 sm:h-60 bg-[#141414] overflow-hidden flex-shrink-0 flex items-center justify-center p-3.5 sm:p-5 rounded-t-2xl sm:rounded-t-[28px]">
-        {imgSrc ? (
-          <img
-            src={imgSrc}
-            alt={product.title}
-            className="w-full h-full object-contain group-hover:scale-108 transition-transform duration-500 drop-shadow-md"
-            loading="lazy"
-            onError={(e) => {
-              e.target.style.display = "none";
-              if (e.target.nextSibling) {
-                e.target.nextSibling.style.display = "flex";
-              }
-            }}
-          />
-        ) : null}
-        <div
-          className="w-full h-full flex items-center justify-center text-4xl text-zinc-600 bg-[#141414]"
-          style={{ display: imgSrc ? "none" : "flex" }}
-        >
-          📦
-        </div>
-
-        <div className="absolute top-2 left-2 sm:top-3 sm:left-3 flex items-center gap-1.5">
-          <span className="badge-bestseller-emerald shadow-md text-[8px] sm:text-[9.5px]">
-            BESTSELLER
+      <div className="flex items-center justify-between mb-2">
+        <span className="badge-featured">IN STOCK</span>
+        {product.category && (
+          <span className="text-[10px] uppercase font-bold text-slate-400">
+            {product.category}
           </span>
-          {product.category && (
-            <span className="text-[8px] sm:text-[9px] font-extrabold uppercase tracking-wider px-1.5 sm:px-2 py-0.5 rounded-full bg-white/10 text-zinc-300 backdrop-blur-md border border-white/10 line-clamp-1">
-              {product.category}
-            </span>
-          )}
-        </div>
+        )}
       </div>
 
-      <div className="p-3.5 sm:p-5 flex-1 flex flex-col justify-between gap-2.5 sm:gap-3">
-        <div className="space-y-1">
+      <div className="relative w-full h-44 bg-slate-50 rounded-xl overflow-hidden flex items-center justify-center p-3 mb-3">
+        <img
+          src={imgSrc}
+          alt={product.title}
+          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+          loading="lazy"
+        />
+      </div>
+
+      <div className="space-y-2 flex-1 flex flex-col justify-between">
+        <div>
           <h2
-            className="text-xs sm:text-base font-bold text-white line-clamp-1 group-hover:text-[#10b981] transition-colors font-['Outfit']"
+            className="text-sm font-bold text-slate-900 line-clamp-1 group-hover:text-[#4f46e5] transition-colors font-['Outfit']"
             title={product.title}
           >
             {product.title}
           </h2>
-          <p
-            className="text-xs text-zinc-400 line-clamp-2 leading-relaxed hidden sm:block"
-            title={product.description}
-          >
-            {product.description || "High quality luxury sound system."}
+          <p className="text-xs text-slate-500 line-clamp-2 mt-1 leading-relaxed">
+            {product.description || "High-performance tech hardware."}
           </p>
         </div>
 
-        <div className="space-y-2 sm:space-y-2.5 pt-2 sm:pt-3 border-t border-white/10 mt-auto">
-          <div className="flex items-baseline justify-between">
-            <span className="text-sm sm:text-lg font-black text-white font-['Outfit']">
-              ₹{Number(product.price).toLocaleString()}
-            </span>
-            <span className="text-[9px] sm:text-[10px] text-zinc-500 font-bold uppercase tracking-widest">
-              IN STOCK
-            </span>
-          </div>
+        <div className="flex items-center gap-1 text-amber-400 text-xs">
+          <FaStar size={11} /><FaStar size={11} /><FaStar size={11} /><FaStar size={11} /><FaStar size={11} />
+          <span className="text-[10px] text-slate-400 font-semibold ml-1">(5.0)</span>
+        </div>
+
+        <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between mt-2">
+          <span className="text-base font-black text-slate-900 font-['Outfit']">
+            ₹{Number(product.price).toLocaleString()}
+          </span>
 
           <button
             onClick={(e) => {
               e.stopPropagation();
               onAddToCart(product);
             }}
-            className="w-full py-2 sm:py-3 btn-emerald-lux text-[11px] sm:text-xs font-bold uppercase tracking-wider rounded-xl sm:rounded-2xl transition-all duration-200 cursor-pointer shadow-md active:scale-95 flex items-center justify-center gap-1"
+            className="px-3.5 py-2 btn-purple-primary text-xs font-bold gap-1.5"
           >
-            <span>ADD TO BAG</span>
-            <span className="text-xs sm:text-sm">🛍️</span>
+            <span>Add</span>
+            <FaShoppingCart size={11} />
           </button>
         </div>
       </div>
@@ -99,6 +80,7 @@ function Home() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const { token, setCartitem } = useUser();
   const navigate = useNavigate();
 
@@ -107,11 +89,11 @@ function Home() {
     try {
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
       const res = await axios.get(
-        `${API_BASE_URL}/api/v1/product/productget`,
+        `${API_BASE_URL}/api/v1/product/productget?all=true`,
         { withCredentials: true, headers }
       );
       setProducts(res.data.products || res.data.Products || []);
-    } catch (err) {
+    } catch {
       setError("Failed to load products.");
     } finally {
       setLoading(false);
@@ -148,7 +130,7 @@ function Home() {
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setCartitem(cartRes.data.cart || []);
-      } catch (err) {
+      } catch {
         toast.error("Failed to add to bag");
       }
     },
@@ -162,51 +144,90 @@ function Home() {
     [navigate]
   );
 
-  const productList = useMemo(() => products, [products]);
+  const filteredProducts = useMemo(() => {
+    if (selectedCategory === "all") return products;
+    const selCat = selectedCategory.toLowerCase();
+    return products.filter((p) => {
+      const pCat = (p.category || "").toLowerCase();
+      return (
+        pCat === selCat ||
+        pCat.includes(selCat) ||
+        selCat.includes(pCat) ||
+        (selCat === "mobile" && (pCat.includes("phone") || pCat.includes("tablet"))) ||
+        (selCat === "laptop" && (pCat.includes("pc") || pCat.includes("computer"))) ||
+        (selCat === "tv" && (pCat.includes("display") || pCat.includes("screen"))) ||
+        (selCat === "appliances" && (pCat.includes("kitchen") || pCat.includes("home")))
+      );
+    });
+  }, [products, selectedCategory]);
 
   return (
-    <div className="min-h-screen bg-[#121212] text-white font-sans flex flex-col">
+    <div className="min-h-screen bg-[#f4f6fb] text-slate-900 font-sans flex flex-col">
       <Navbar />
 
-      {/* Hero Section */}
-      <section className="py-12 sm:py-16 px-4 text-center max-w-4xl mx-auto space-y-3">
-        <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest bg-white/10 text-[#10b981] border border-white/10">
-          <span>AURA COLLECTION</span>
-        </div>
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight font-['Outfit']">
-          DISCOVER THE COLLECTION
+      {/* Header Banner */}
+      <section className="py-10 px-4 text-center max-w-4xl mx-auto space-y-2">
+        <span className="inline-block px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-indigo-50 text-[#4f46e5] border border-indigo-200">
+          Curated Catalog
+        </span>
+        <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 font-['Outfit']">
+          EXPLORE TECH COLLECTION
         </h1>
-        <p className="text-zinc-400 text-xs sm:text-sm tracking-widest uppercase max-w-lg mx-auto">
-          Explore iconic high-end acoustic and luxury lifestyle design pieces.
+        <p className="text-slate-500 text-xs sm:text-sm max-w-lg mx-auto">
+          Discover high-performance smartphones, premium audio, OLED displays, and smart gadgets.
         </p>
+
+        {/* Category Filters */}
+        <div className="flex items-center justify-center gap-2 overflow-x-auto scrollbar-none pt-4">
+          {[
+            { id: "all", label: "All Products" },
+            { id: "mobile", label: "Smartphones" },
+            { id: "laptop", label: "Laptops" },
+            { id: "audio", label: "Audio" },
+            { id: "watch", label: "Watches" },
+            { id: "appliances", label: "Appliances" },
+          ].map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setSelectedCategory(cat.id)}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                selectedCategory === cat.id
+                  ? "bg-[#4f46e5] text-white shadow-sm"
+                  : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-50"
+              }`}
+            >
+              {cat.label}
+            </button>
+          ))}
+        </div>
       </section>
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         {loading && (
           <div className="flex flex-col items-center justify-center py-20 gap-3">
-            <div className="w-10 h-10 border-4 border-white/20 border-t-[#10b981] rounded-full animate-spin" />
-            <p className="text-zinc-400 text-xs tracking-wider uppercase font-medium">Loading store products...</p>
+            <div className="spinner-purple" />
+            <p className="text-slate-500 text-xs font-bold uppercase tracking-wider">Loading products...</p>
           </div>
         )}
 
         {error && (
-          <div className="text-center py-16 px-4 bg-rose-950/40 border border-rose-500/30 rounded-3xl max-w-md mx-auto">
-            <p className="text-rose-400 text-sm font-semibold">⚠️ {error}</p>
+          <div className="text-center py-16 px-4 bg-rose-50 border border-rose-200 rounded-2xl max-w-md mx-auto">
+            <p className="text-rose-600 text-sm font-semibold">⚠️ {error}</p>
           </div>
         )}
 
-        {!loading && !error && productList.length === 0 && (
-          <div className="text-center py-20 px-4 bg-[#1e1e1e] border border-white/10 rounded-3xl max-w-md mx-auto space-y-3">
+        {!loading && !error && filteredProducts.length === 0 && (
+          <div className="text-center py-20 px-4 bg-white border border-slate-200 rounded-3xl max-w-md mx-auto space-y-3 shadow-sm">
             <div className="text-5xl">📦</div>
-            <p className="text-white text-base font-bold">No products found</p>
-            <p className="text-zinc-400 text-xs">Add products from your Admin Dashboard!</p>
+            <p className="text-slate-900 text-base font-bold">No products found</p>
+            <p className="text-slate-500 text-xs">Try selecting another category or check back later.</p>
           </div>
         )}
 
-        {!loading && !error && productList.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {productList.map((product) => (
+        {!loading && !error && filteredProducts.length > 0 && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+            {filteredProducts.map((product) => (
               <HomeProductCard
                 key={product._id}
                 product={product}

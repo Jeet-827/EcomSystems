@@ -17,6 +17,7 @@ const Checkout    = lazy(() => import("./pages/Checkout"));
 const Profile     = lazy(() => import("./pages/Profile"));
 const SearchPage  = lazy(() => import("./pages/SearchPage"));
 const ProductDetail = lazy(() => import("./pages/ProductDetail"));
+const Wishlist    = lazy(() => import("./pages/Wishlist"));
 const ProtectRoute = lazy(() => import("./ProtectRoute"));
 const Protectadmin = lazy(() => import("./Admin/Protectadmin"));
 
@@ -34,10 +35,10 @@ const EditProduct     = lazy(() => import("./Admin/EditProduct"));
 /* ── Full-screen suspense fallback ── */
 function PageLoader() {
   return (
-    <div className="min-h-screen bg-[#121212] flex items-center justify-center">
+    <div className="min-h-screen bg-[#f4f6fb] flex items-center justify-center">
       <div className="flex flex-col items-center gap-4">
-        <div className="w-12 h-12 border-4 border-emerald-500/20 border-t-[#10b981] rounded-full animate-spin" />
-        <p className="text-zinc-400 text-sm font-medium tracking-wide font-['Outfit']">Loading...</p>
+        <div className="spinner-purple" />
+        <p className="text-slate-500 text-xs font-bold uppercase tracking-wider font-['Outfit']">Loading TREO Store...</p>
       </div>
     </div>
   );
@@ -91,19 +92,19 @@ function App() {
         pauseOnHover={false}
         pauseOnFocusLoss={false}
         draggable
-        theme="dark"
+        theme="light"
         toastStyle={{
-          background: '#1e1e1e',
-          border: '1px solid rgba(255,255,255,0.12)',
-          color: '#fff',
+          background: '#ffffff',
+          border: '1px solid #e2e8f0',
+          color: '#0f172a',
           fontFamily: "'Outfit', sans-serif",
           cursor: 'pointer',
           borderRadius: '14px',
           fontSize: '13px',
-          boxShadow: '0 10px 25px -5px rgba(0,0,0,0.5)',
+          boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)',
           margin: '8px 12px'
         }}
-        progressStyle={{ background: '#10b981' }}
+        progressStyle={{ background: '#4f46e5' }}
       />
       <Routes>
         <Route path="/" element={<Landing />} />
@@ -114,6 +115,7 @@ function App() {
         <Route path="/search" element={<SearchPage />} />
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/allproducts" element={<Allproducts />} />
+        <Route path="/wishlist" element={<Wishlist />} />
 
         {/* Protected Admin routes */}
         <Route element={<Protectadmin />}>
