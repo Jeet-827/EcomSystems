@@ -18,6 +18,8 @@ function Login() {
   const handleGithub = () => {
     window.location.href = `${API_BASE_URL}/auth/github`;
   };
+
+  
   const navigate = useNavigate();
   const { setUser, setToken } = useUser();
 

@@ -27,29 +27,18 @@ oAuthgitRouter.get(
         const refreshToken = jwt.sign(
             { id: user._id },
             process.env.SECRET_TWO,
-            {
-                expiresIn: "7d"
-            }
+            { expiresIn: "7d" }
         );
 
         const cookieOptions = {
             httpOnly: true,
-            sameSite:
-                process.env.NODE_ENV === "production"
-                    ? "none"
-                    : "lax",
-            secure:
-                process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+            secure: process.env.NODE_ENV === "production",
             maxAge: 7 * 24 * 60 * 60 * 1000
         };
 
-        res.cookie(
-            "token",
-            refreshToken,
-            cookieOptions
-        );
-
-        res.redirect(process.env.FRONTEND_URL);
+        res.cookie("token", refreshToken, cookieOptions);
+        res.redirect(`${process.env.FRONTEND_URL}`);
     }
 );
 
