@@ -66,7 +66,7 @@ const RelatedProductCard = memo(({ product, onClick, onAddToCart }) => {
 function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { token, setCartitem, isInWishlist, toggleWishlist } = useUser();
+  const { token, setCartitem } = useUser();
 
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
@@ -298,35 +298,20 @@ function ProductDetail() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
               <button
                 onClick={handleAddToCart}
-                className="flex-1 py-3.5 px-6 btn-purple-primary text-xs font-black uppercase tracking-wider gap-2 shadow-md"
+                className="py-3.5 px-6 btn-purple-primary text-xs font-black uppercase tracking-wider gap-2"
               >
                 <FaShoppingCart size={13} />
                 <span>Add To Bag</span>
               </button>
               <button
                 onClick={handleBuyNow}
-                className="flex-1 py-3.5 px-6 bg-slate-900 hover:bg-black text-white font-black text-xs uppercase tracking-wider rounded-xl transition-colors cursor-pointer shadow-md flex items-center justify-center gap-2"
+                className="py-3.5 px-6 bg-slate-900 hover:bg-black text-white font-black text-xs uppercase tracking-wider rounded-xl transition-colors cursor-pointer shadow-md flex items-center justify-center gap-2"
               >
                 <FaBolt size={12} className="text-amber-400" />
                 <span>Buy Now</span>
-              </button>
-              <button
-                onClick={() => {
-                  const added = toggleWishlist(product);
-                  if (added) toast.success("Added to Wishlist! ❤️", { autoClose: 800 });
-                  else toast.info("Removed from Wishlist", { autoClose: 700 });
-                }}
-                className={`p-3.5 rounded-xl border flex items-center justify-center transition-all cursor-pointer ${
-                  isInWishlist(product._id)
-                    ? "bg-rose-50 border-rose-200 text-rose-500 shadow-sm"
-                    : "bg-slate-50 border-slate-200 text-slate-500 hover:text-rose-500 hover:bg-rose-50 hover:border-rose-200"
-                }`}
-                title={isInWishlist(product._id) ? "Remove from Wishlist" : "Save to Wishlist"}
-              >
-                <FaHeart size={16} />
               </button>
             </div>
 

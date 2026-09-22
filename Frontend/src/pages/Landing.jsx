@@ -61,9 +61,6 @@ const TRENDING_TAGS = [
 
 /* ── Reusable Light Tech Product Card ── */
 const TechProductCard = memo(({ product, onAddToCart, onProductClick, showBadge = true }) => {
-  const { isInWishlist, toggleWishlist } = useUser();
-  const isWishlisted = isInWishlist(product?._id);
-
   const imgSrc = Array.isArray(product?.productimage)
     ? product.productimage[0]
     : product?.productimage || "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=500&auto=format&fit=crop&q=60";
@@ -86,19 +83,10 @@ const TechProductCard = memo(({ product, onAddToCart, onProductClick, showBadge 
         <button
           onClick={(e) => {
             e.stopPropagation();
-            const added = toggleWishlist(product);
-            if (added) {
-              toast.success("Added to Wishlist! ❤️", { autoClose: 800 });
-            } else {
-              toast.info("Removed from Wishlist", { autoClose: 700 });
-            }
+            toast.info("Saved to wishlist!", { autoClose: 800 });
           }}
-          className={`p-1.5 rounded-full transition-colors ${
-            isWishlisted
-              ? "text-rose-500 hover:text-rose-600 bg-rose-50"
-              : "text-slate-300 hover:text-rose-500 hover:bg-slate-50"
-          }`}
-          title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+          className="text-slate-300 hover:text-red-500 transition-colors p-1"
+          title="Add to wishlist"
         >
           <FaHeart size={14} />
         </button>
