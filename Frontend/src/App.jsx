@@ -38,7 +38,7 @@ function PageLoader() {
     <div className="min-h-screen bg-[#f4f6fb] flex items-center justify-center">
       <div className="flex flex-col items-center gap-4">
         <div className="spinner-purple" />
-        <p className="text-slate-500 text-xs font-bold uppercase tracking-wider font-['Outfit']">Loading TREO Store...</p>
+        <p className="text-slate-500 text-xs font-bold uppercase tracking-wider font-['Outfit']">Loading Nexora Store...</p>
       </div>
     </div>
   );

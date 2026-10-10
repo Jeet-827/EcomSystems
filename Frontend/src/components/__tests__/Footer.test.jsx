@@ -16,7 +16,7 @@ describe("Footer Component Unit Tests", () => {
     expect(screen.getByText("Quick Links")).toBeInTheDocument();
     expect(screen.getByText("Customer Care")).toBeInTheDocument();
     expect(screen.getByText("Smartphones & Tablets")).toBeInTheDocument();
-    expect(screen.getAllByText(/TREO/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/NEXORA/i).length).toBeGreaterThan(0);
   });
 
   it("handles newsletter subscription correctly", async () => {

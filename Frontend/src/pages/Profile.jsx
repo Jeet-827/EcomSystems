@@ -388,7 +388,7 @@ const Profile = () => {
             </div>
             <div>
               <span className="text-[10px] uppercase font-bold text-indigo-200 tracking-wider">
-                TREO VIP Member
+                Nexora VIP Member
               </span>
               <h1 className="text-2xl font-black font-['Outfit']">{user?.name || "Customer"}</h1>
               <p className="text-xs text-indigo-100">{user?.email}</p>

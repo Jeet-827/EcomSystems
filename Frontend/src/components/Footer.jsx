@@ -1,18 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  FaGithub,
   FaTwitter,
   FaInstagram,
   FaFacebookF,
-  FaPhoneAlt,
   FaEnvelope,
-  FaMapMarkerAlt,
-  FaCcVisa,
-  FaCcMastercard,
-  FaCcPaypal,
-  FaCcAmex,
-  FaApplePay,
+  FaShieldAlt,
+  FaTruck,
+  FaHeadset,
 } from "react-icons/fa";
 
 function Footer() {
@@ -31,39 +26,35 @@ function Footer() {
   };
 
   return (
-    <footer className="w-full bg-white text-slate-600 font-sans border-t border-slate-200 py-12">
+    <footer className="w-full bg-white text-slate-600 font-sans border-t border-slate-200 pt-12 pb-8">
       {/* ── Main Footer Links Grid ── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
-          {/* Column 1: Brand Info & Contact */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 pb-10 border-b border-slate-100">
+          {/* Column 1: Brand Info & Support */}
           <div className="space-y-4">
             <Link to="/" className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#4f46e5] to-[#6366f1] text-white flex items-center justify-center font-black text-lg shadow-sm">
-                T
+                N
               </div>
               <span className="font-black text-slate-900 text-2xl tracking-tight font-['Outfit']">
-                TREO<span className="text-[#4f46e5]">.</span>
+                NEXORA<span className="text-[#4f46e5]">.</span>
               </span>
             </Link>
             <p className="text-xs text-slate-500 leading-relaxed">
-              Your one-stop destination for cutting-edge electronics, premium smart home tech, and everyday luxury gadgets.
+              Premium electronics, smart tech, and modern accessories curated for your everyday digital lifestyle.
             </p>
             <div className="space-y-2 text-xs text-slate-600">
               <div className="flex items-center gap-2.5">
-                <FaPhoneAlt className="text-[#4f46e5]" size={12} />
-                <span className="font-bold text-slate-800">+1 (800) 123-4567</span>
-              </div>
-              <div className="flex items-center gap-2.5">
                 <FaEnvelope className="text-[#4f46e5]" size={12} />
-                <span>support@treotech.com</span>
+                <span>support@nexorastore.com</span>
               </div>
               <div className="flex items-center gap-2.5">
-                <FaMapMarkerAlt className="text-[#4f46e5]" size={12} />
-                <span>5th Avenue, New York, NY 10001</span>
+                <FaHeadset className="text-[#4f46e5]" size={12} />
+                <span>Mon – Sat: 9:00 AM – 7:00 PM</span>
               </div>
             </div>
             {/* Social Icons */}
-            <div className="flex items-center gap-2.5 pt-2">
+            <div className="flex items-center gap-2.5 pt-1">
               <a
                 href="https://facebook.com"
                 target="_blank"
@@ -90,15 +81,6 @@ function Footer() {
                 className="w-8 h-8 rounded-full bg-slate-100 hover:bg-[#4f46e5] hover:text-white flex items-center justify-center text-slate-600 transition-colors"
               >
                 <FaTwitter size={12} />
-              </a>
-              <a
-                href="https://github.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="GitHub"
-                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-[#4f46e5] hover:text-white flex items-center justify-center text-slate-600 transition-colors"
-              >
-                <FaGithub size={12} />
               </a>
             </div>
           </div>
@@ -159,11 +141,6 @@ function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/allproducts?category=audio" className="hover:text-[#4f46e5] transition-colors">
-                  Best Selling Tech
-                </Link>
-              </li>
-              <li>
                 <Link to="/profile" className="hover:text-[#4f46e5] transition-colors">
                   Track Your Order
                 </Link>
@@ -199,17 +176,12 @@ function Footer() {
               </li>
               <li>
                 <Link to="/profile" className="hover:text-[#4f46e5] transition-colors">
-                  90-Day Returns Policy
+                  Warranty & Returns
                 </Link>
               </li>
               <li>
                 <Link to="/profile" className="hover:text-[#4f46e5] transition-colors">
-                  Warranty Coverage
-                </Link>
-              </li>
-              <li>
-                <Link to="/profile" className="hover:text-[#4f46e5] transition-colors">
-                  Terms & Conditions
+                  Terms of Service
                 </Link>
               </li>
               <li>
@@ -220,7 +192,7 @@ function Footer() {
             </ul>
           </div>
 
-          {/* Column 5: Newsletter & App */}
+          {/* Column 5: Newsletter */}
           <div>
             <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider mb-4 font-['Outfit']">
               Newsletter
@@ -247,18 +219,23 @@ function Footer() {
               </button>
             </form>
 
-            <div className="pt-4 mt-2">
-              <p className="text-[10px] font-extrabold uppercase text-slate-400 mb-2">
-                Guaranteed Safe Checkout
-              </p>
-              <div className="flex items-center gap-2 text-2xl text-slate-400">
-                <FaCcVisa title="Visa" className="hover:text-blue-600 transition-colors" />
-                <FaCcMastercard title="Mastercard" className="hover:text-red-500 transition-colors" />
-                <FaCcPaypal title="PayPal" className="hover:text-blue-500 transition-colors" />
-                <FaCcAmex title="American Express" className="hover:text-blue-700 transition-colors" />
-                <FaApplePay title="Apple Pay" className="hover:text-slate-900 transition-colors" />
-              </div>
+            <div className="pt-3.5 flex items-center gap-2 text-slate-500 text-[11px]">
+              <FaShieldAlt className="text-emerald-500 shrink-0" size={13} />
+              <span>100% Secure Checkout & Verified Payments</span>
             </div>
+          </div>
+        </div>
+
+        {/* ── Bottom Bar: Copyright & Trust Badges ── */}
+        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+          <p>© 2026 Nexora Tech. All rights reserved.</p>
+          <div className="flex items-center gap-6 text-[11px] font-medium text-slate-500">
+            {/* <span className="flex items-center gap-1.5">
+              <FaTruck className="text-[#4f46e5]" size={12} /> Fast Delivery
+            </span>
+            <span className="flex items-center gap-1.5">
+              <FaShieldAlt className="text-[#4f46e5]" size={12} /> 100% Genuine Products
+            </span> */}
           </div>
         </div>
       </div>

@@ -57,10 +57,10 @@ function Register() {
           {/* Brand */}
           <div className="flex items-center gap-2.5">
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#4f46e5] to-[#6366f1] text-white flex items-center justify-center font-black text-xl shadow-md font-['Outfit']">
-              T
+              N
             </div>
             <span className="font-black text-slate-900 text-2xl tracking-tight font-['Outfit']">
-              TREO<span className="text-[#4f46e5]">.</span>
+              NEXORA<span className="text-[#4f46e5]">.</span>
             </span>
           </div>
 
@@ -70,7 +70,7 @@ function Register() {
               Create an Account
             </h1>
             <p className="text-slate-500 text-xs mt-1">
-              Join TREO to unlock member discounts, warranty tracking, and express shipping.
+              Join Nexora to unlock member discounts, warranty tracking, and express shipping.
             </p>
           </div>
 

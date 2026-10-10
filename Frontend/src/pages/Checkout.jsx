@@ -202,7 +202,7 @@ function Checkout() {
         key: RAZOR_KEY,
         amount: data.order.amount,
         currency: data.order.currency,
-        name: "TREO Tech Store",
+        name: "Nexora Tech Store",
         order_id: data.order.id,
         prefill: {
           name: user?.name || "Customer",

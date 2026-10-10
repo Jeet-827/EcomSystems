@@ -240,9 +240,9 @@ function Navbar() {
           <div className="flex items-center justify-between pb-4 border-b border-slate-200">
             <Link to="/" className="flex items-center gap-2" onClick={closeMenu}>
               <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black text-sm">
-                T
+                N
               </div>
-              <span className="font-black text-slate-900 text-lg tracking-tight font-['Outfit']">TREO</span>
+              <span className="font-black text-slate-900 text-lg tracking-tight font-['Outfit']">NEXORA</span>
             </Link>
             <button
               className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
@@ -273,7 +273,7 @@ function Navbar() {
         </div>
 
         <div className="pt-4 border-t border-slate-200 text-center text-[11px] text-slate-400">
-          <p>© 2026 TREO Tech E-Commerce</p>
+          <p>© 2026 Nexora Tech. All rights reserved.</p>
         </div>
       </div>
     </>,
@@ -287,11 +287,11 @@ function Navbar() {
         {/* Brand Logo */}
         <Link to="/" className="flex items-center gap-2 flex-shrink-0 group">
           <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#4f46e5] to-[#6366f1] text-white flex items-center justify-center font-black text-xl shadow-md group-hover:scale-105 transition-transform">
-            T
+            N
           </div>
           <div className="flex flex-col">
             <span className="font-black text-slate-900 text-2xl tracking-tight leading-none font-['Outfit']">
-              TREO<span className="text-[#4f46e5]">.</span>
+              NEXORA<span className="text-[#4f46e5]">.</span>
             </span>
             <span className="text-[9px] font-extrabold uppercase tracking-widest text-slate-400">
               TECH STORE

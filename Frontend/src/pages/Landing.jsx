@@ -979,7 +979,7 @@ function Landing() {
               </div>
 
               <p className="text-xs sm:text-sm text-slate-600 italic leading-relaxed">
-                "The delivery was ultra fast, and the De'Longhi espresso maker is by far the best appliance I've ever owned. TREO's support team answered my questions within minutes!"
+                "The delivery was ultra fast, and the De'Longhi espresso maker is by far the best appliance I've ever owned. Nexora's support team answered my questions within minutes!"
               </p>
             </div>
 

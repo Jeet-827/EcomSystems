@@ -27,7 +27,7 @@ export const Providerfun = ({ children }) => {
   // Initialize wishlist state from localStorage
   const [wishlist, setWishlist] = useState(() => {
     try {
-      const savedWishlist = localStorage.getItem("treo_wishlist");
+      const savedWishlist = localStorage.getItem("nexora_wishlist") || localStorage.getItem("treo_wishlist");
       return savedWishlist ? JSON.parse(savedWishlist) : [];
     } catch {
       return [];
@@ -59,7 +59,7 @@ export const Providerfun = ({ children }) => {
   // Sync wishlist state to localStorage
   useEffect(() => {
     try {
-      localStorage.setItem("treo_wishlist", JSON.stringify(wishlist));
+      localStorage.setItem("nexora_wishlist", JSON.stringify(wishlist));
     } catch (e) {
       console.error("Failed to save wishlist to localStorage:", e);
     }
